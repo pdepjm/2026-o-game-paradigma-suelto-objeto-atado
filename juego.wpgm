@@ -1,0 +1,87 @@
+import wollok.game.*
+import enemigos.enemigo
+
+
+object pantallaPerder {
+
+	method text() = "Perdiste"
+}
+
+object bala {
+	var danio = 10
+	var position = game.origin()
+	method image() = "bala.jpg"
+
+	method danio() = danio
+	method position() = position
+
+	method cambiarPosicion(x, y) {
+		position = game.at(x,y)
+	}
+}
+
+object juego {
+	method perder() {
+		game.removeVisual(personaje)
+        game.boardGround("pantallaPerdido.jpg")
+		game.addVisual(pantallaPerder)
+	}
+}
+
+object personaje {
+  var vida = 100
+  var image = "indio.png"
+  const posicionInicial = game.center()
+  var position = posicionInicial
+  
+  method vida() = vida
+
+  method position() = position
+  method image() = image
+
+  method cambiarPersonaje(nuevoPersonaje) {
+	  image = nuevoPersonaje
+  }
+
+  method modificarVida(valor) {
+	vida += valor
+    if(vida == 0 ) {
+        juego.perder()
+    }
+  }
+
+  method dispararDerecha() {
+  	bala.cambiarPosicion(self.position().x()+1, self.position().y())
+	game.addVisual(bala)
+  }
+  method dispararIzquierda() {
+	bala.cambiarPosicion(self.position().x()-1, self.position().y())
+	game.addVisual(bala)
+  }
+  method dispararAbajo() {
+	bala.cambiarPosicion(self.position().x(), self.position().y()-1)
+	game.addVisual(bala)
+  }
+  method dispararArriba() {
+	bala.cambiarPosicion(self.position().x(), self.position().y()+1)
+	game.addVisual(bala)
+  }
+}
+
+
+program misaRicotera {
+	game.title("La Misa Ricotera")
+	game.height(10)
+	game.width(10)
+  
+	game.addVisualCharacter(personaje)
+	const tickEnemigos = game.tick(3000, game.addVisual(enemigo), false)
+	tickEnemigos.start()
+
+	keyboard.a().onPressDo({personaje.dispararIzquierda()})
+	keyboard.d().onPressDo({personaje.dispararDerecha()})
+	keyboard.s().onPressDo({personaje.dispararAbajo()})
+	keyboard.w().onPressDo({personaje.dispararArriba()})
+
+	game.start()
+}
