@@ -1,43 +1,77 @@
 import wollok.game.*
-import enemigos.enemigo
-
+import enemigos.Enemigo
+import armas.Bala
 
 object pantallaPerder {
 
 	method text() = "Perdiste"
 }
 
-object bala {
-	var danio = 10
-	var position = game.origin()
-	method image() = "bala.jpg"
 
-	method danio() = danio
-	method position() = position
-
-	method cambiarPosicion(x, y) {
-		position = game.at(x,y)
-	}
-}
 
 object juego {
+	const enemigos = []
+	const balas = []
 	method perder() {
 		game.removeVisual(personaje)
         game.boardGround("pantallaPerdido.jpg")
 		game.addVisual(pantallaPerder)
+	}
+
+	method añadirEnemigo() {
+		const nuevoEnemigo = new Enemigo()
+		enemigos.add(nuevoEnemigo)
+		game.addVisual(nuevoEnemigo)
+	}
+
+	method moverEnemigos() {
+		enemigos.forEach({enemigo => enemigo.perseguir(personaje)})
+	}
+
+	method dispararDerecha() {
+	const bala = new Bala(image = "balaDerecha.png",seMueveHorizontal = true,cantidadCasillasMovimiento = 1)
+  	bala.cambiarPosicion(personaje.position().x()+1, personaje.position().y())
+	game.addVisual(bala)
+	balas.add(bala)
+  }
+  method dispararIzquierda() {
+	const bala = new Bala(image = "balaIzquierda.png",seMueveHorizontal = true,cantidadCasillasMovimiento = (-1))
+	bala.cambiarPosicion(personaje.position().x()-1, personaje.position().y())
+	game.addVisual(bala)
+	balas.add(bala)
+  }
+  method dispararAbajo() {
+	const bala = new Bala(image = "balaAbajo.png",seMueveHorizontal = false,cantidadCasillasMovimiento = (-1))
+	bala.cambiarPosicion(personaje.position().x(), personaje.position().y()-1)
+	game.addVisual(bala)
+	balas.add(bala)
+  }
+  method dispararArriba() {
+	const bala = new Bala(image = "balaArriba.png",seMueveHorizontal = false,cantidadCasillasMovimiento = 1)
+	bala.cambiarPosicion(personaje.position().x(), personaje.position().y()+1)
+	game.addVisual(bala)
+	balas.add(bala)
+  }
+
+  method moverBalas() {
+	balas.forEach({bala => bala.mover()})
 	}
 }
 
 object personaje {
   var vida = 100
   var image = "indio.png"
-  const posicionInicial = game.center()
+  var posicionInicial = game.center()
   var position = posicionInicial
+  
   
   method vida() = vida
 
   method position() = position
-  method image() = image
+  method position(nuevaPosition) {
+	position = nuevaPosition
+  }
+  method image() = "indio.png"
 
   method cambiarPersonaje(nuevoPersonaje) {
 	  image = nuevoPersonaje
@@ -50,22 +84,7 @@ object personaje {
     }
   }
 
-  method dispararDerecha() {
-  	bala.cambiarPosicion(self.position().x()+1, self.position().y())
-	game.addVisual(bala)
-  }
-  method dispararIzquierda() {
-	bala.cambiarPosicion(self.position().x()-1, self.position().y())
-	game.addVisual(bala)
-  }
-  method dispararAbajo() {
-	bala.cambiarPosicion(self.position().x(), self.position().y()-1)
-	game.addVisual(bala)
-  }
-  method dispararArriba() {
-	bala.cambiarPosicion(self.position().x(), self.position().y()+1)
-	game.addVisual(bala)
-  }
+  
 }
 
 
@@ -74,14 +93,22 @@ program misaRicotera {
 	game.height(10)
 	game.width(10)
   
-	game.addVisualCharacter(personaje)
-	const tickEnemigos = game.tick(3000, game.addVisual(enemigo), false)
-	tickEnemigos.start()
-
-	keyboard.a().onPressDo({personaje.dispararIzquierda()})
-	keyboard.d().onPressDo({personaje.dispararDerecha()})
-	keyboard.s().onPressDo({personaje.dispararAbajo()})
-	keyboard.w().onPressDo({personaje.dispararArriba()})
-
+	
+	const tickEnemigos = game.tick(5000, {juego.añadirEnemigo()}, false)
+	const tickMovimientoEnemigos = game.tick(1000, {juego.moverEnemigos()}, false)
+	const tickMovimientoBalas= game.tick(100, {juego.moverBalas()}, false)
+	
 	game.start()
+
+	game.addVisualCharacter(personaje)
+
+	keyboard.a().onPressDo({juego.dispararIzquierda()})
+	keyboard.d().onPressDo({juego.dispararDerecha()})
+	keyboard.s().onPressDo({juego.dispararAbajo()})
+	keyboard.w().onPressDo({juego.dispararArriba()})
+	tickMovimientoBalas.start()
+	tickEnemigos.start()
+	//tickMovimientoEnemigos.start()
 }
+
+

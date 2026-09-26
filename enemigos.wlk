@@ -1,6 +1,6 @@
 
 
-object enemigo {
+class Enemigo {
   var vida = 15
   var image = "enemigo.png"
   const danio = 40
