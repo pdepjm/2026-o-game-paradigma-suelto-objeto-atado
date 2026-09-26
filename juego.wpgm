@@ -4,7 +4,14 @@ import armas.Bala
 
 object pantallaPerder {
 
+	method position() = game.center()
 	method text() = "Perdiste"
+}
+
+object pantallaGanar {
+
+	method position() = game.center()
+	method text() = "Ganaste"
 }
 
 
@@ -12,20 +19,38 @@ object pantallaPerder {
 object juego {
 	const enemigos = []
 	const balas = []
+	var cantidadEnemigosRonda = 3
+	var cantidadEnemigosDerrotados = 0
 	method perder() {
-		game.removeVisual(personaje)
-        game.boardGround("pantallaPerdido.jpg")
+		game.clear()
 		game.addVisual(pantallaPerder)
 	}
 
+	method ganaste() {
+		game.clear()
+		game.addVisual(pantallaGanar)
+	}
 	method añadirEnemigo() {
-		const nuevoEnemigo = new Enemigo()
-		enemigos.add(nuevoEnemigo)
-		game.addVisual(nuevoEnemigo)
+		if(enemigos.size() < cantidadEnemigosRonda) {
+			const nuevoEnemigo = new Enemigo()
+			enemigos.add(nuevoEnemigo)
+			game.addVisual(nuevoEnemigo)
+			game.onCollideDo(nuevoEnemigo, {arma => arma.chocarConElEnemigo(nuevoEnemigo)})
+		}else {
+			game.removeTickEvent("crearEnemigos")
+		}
 	}
 
 	method moverEnemigos() {
 		enemigos.forEach({enemigo => enemigo.perseguir(personaje)})
+	}
+
+	method eliminarEnemigo(enemigo) {
+		enemigos.remove(enemigo)
+		cantidadEnemigosDerrotados++
+		if(cantidadEnemigosDerrotados == cantidadEnemigosRonda) {
+			self.ganaste()
+		}
 	}
 
 	method dispararDerecha() {
@@ -56,6 +81,10 @@ object juego {
   method moverBalas() {
 	balas.forEach({bala => bala.mover()})
 	}
+
+	method eliminarBala(bala) {
+		balas.remove(bala)
+	}
 }
 
 object personaje {
@@ -79,11 +108,16 @@ object personaje {
 
   method modificarVida(valor) {
 	vida += valor
-    if(vida == 0 ) {
+    if(vida <= 0 ) {
+		game.say(self, "Perdi")
         juego.perder()
     }
   }
 
+  method chocarConElEnemigo(enemigo) {
+	self.modificarVida(-(enemigo.danio()))
+	game.say(self, "Dolor")
+  }
   
 }
 
@@ -92,23 +126,34 @@ program misaRicotera {
 	game.title("La Misa Ricotera")
 	game.height(10)
 	game.width(10)
-  
 	
-	const tickEnemigos = game.tick(5000, {juego.añadirEnemigo()}, false)
+	//VER COMO FRENAR LOS TICKS UNA VEZ SE PIERDE
+	//cada 5 segundos se crea un enemigo y despues cada un segundo busca al personaje
+	
+	game.onTick(5000, "crearEnemigos", {juego.añadirEnemigo()}) //este tick los hacemos asi para que cuando llegue
+	//al tope de enemigos se pueda frenar
 	const tickMovimientoEnemigos = game.tick(1000, {juego.moverEnemigos()}, false)
+	//cada 100 milisegundos se mueven las balas disparadas por el personaje
 	const tickMovimientoBalas= game.tick(100, {juego.moverBalas()}, false)
 	
-	game.start()
-
+	//colision de el personaje con los enemigos. Si pasa, se le saca vida al personaj
 	game.addVisualCharacter(personaje)
+
 
 	keyboard.a().onPressDo({juego.dispararIzquierda()})
 	keyboard.d().onPressDo({juego.dispararDerecha()})
 	keyboard.s().onPressDo({juego.dispararAbajo()})
 	keyboard.w().onPressDo({juego.dispararArriba()})
+
 	tickMovimientoBalas.start()
-	tickEnemigos.start()
-	//tickMovimientoEnemigos.start()
+	tickMovimientoEnemigos.start()
+
+
+	game.start()
+
+	
+
+	
 }
 
 

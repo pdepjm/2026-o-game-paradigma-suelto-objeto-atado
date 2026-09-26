@@ -1,4 +1,4 @@
-
+import juego.juego
 
 class Enemigo {
   var vida = 15
@@ -17,6 +17,10 @@ class Enemigo {
 
   method cambiarVida(vidaARestar){
     vida -= vidaARestar
+    if(vida <= 0) {
+      juego.eliminarEnemigo(self)
+      game.removeVisual(self)
+    }
   }
   method cambiarEnemigo(nuevoEnemigo) {
 	image = nuevoEnemigo

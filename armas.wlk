@@ -1,3 +1,4 @@
+import juego.juego
 class Bala {
 	var danio = 10
 	var position = game.origin()
@@ -22,4 +23,10 @@ class Bala {
         }
     }
     
+    method chocarConElEnemigo(enemigo) {
+        enemigo.cambiarVida(danio)
+        game.say(enemigo, "Auch")
+        game.removeVisual(self)
+        juego.eliminarBala(self)
+    }
 }
