@@ -1,6 +1,6 @@
 import juego.juego
 class Bala {
-	var danio = 10
+	var danio = 1
 	var position = game.origin()
 	var image
     const seMueveHorizontal
@@ -20,6 +20,11 @@ class Bala {
             position = game.at(position.x()+cantidadCasillasMovimiento, position.y())
         }else {
             position = game.at(position.x(), position.y()+cantidadCasillasMovimiento)
+        }
+        
+        if(position.x() > game.width() || position.x() < 0 || position.y() > game.height() || position.y() < 0){
+            game.removeVisual(self)
+            juego.eliminarBala(self)
         }
     }
     

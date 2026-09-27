@@ -1,6 +1,7 @@
 import wollok.game.*
 import enemigos.Enemigo
 import armas.Bala
+import personajes.personaje
 
 object pantallaPerder {
 
@@ -17,108 +18,87 @@ object pantallaGanar {
 
 
 object juego {
-	const enemigos = []
-	const balas = []
-	var cantidadEnemigosRonda = 3
-	var cantidadEnemigosDerrotados = 0
-	method perder() {
-		game.clear()
-		game.addVisual(pantallaPerder)
-	}
+  const enemigos = []
+  const balas = []
+  var cantidadEnemigosRonda = 3
+  var cantidadEnemigosDerrotados = 0
 
-	method ganaste() {
-		game.clear()
-		game.addVisual(pantallaGanar)
-	}
-	method añadirEnemigo() {
-		if(enemigos.size() < cantidadEnemigosRonda) {
-			const nuevoEnemigo = new Enemigo()
-			enemigos.add(nuevoEnemigo)
-			game.addVisual(nuevoEnemigo)
-			game.onCollideDo(nuevoEnemigo, {arma => arma.chocarConElEnemigo(nuevoEnemigo)})
-		}else {
-			game.removeTickEvent("crearEnemigos")
-		}
-	}
+  //los enemigos se mueven cada 1 segundo
+  const tickMovimientoEnemigos = game.tick(1000, {self.moverEnemigos()}, false)
+  //cada 100 milisegundos se mueven las balas disparadas por el personaje
+  const tickMovimientoBalas= game.tick(100, {self.moverBalas()}, false)
 
-	method moverEnemigos() {
-		enemigos.forEach({enemigo => enemigo.perseguir(personaje)})
-	}
+  method iniciar() {
+	//cada 5 segundos se crea un enemigo y despues cada un segundo busca al personaje
+	//este tick los hacemos asi para que cuando llegue al tope de enemigos se pueda frenar
+	game.onTick(5000, "crearEnemigos", {self.añadirEnemigo()}) 
 
-	method eliminarEnemigo(enemigo) {
-		enemigos.remove(enemigo)
-		cantidadEnemigosDerrotados++
-		if(cantidadEnemigosDerrotados == cantidadEnemigosRonda) {
-			self.ganaste()
-		}
-	}
+	tickMovimientoBalas.start()
+	tickMovimientoEnemigos.start()		
+  }												
 
-	method dispararDerecha() {
-	const bala = new Bala(image = "balaDerecha.png",seMueveHorizontal = true,cantidadCasillasMovimiento = 1)
-  	bala.cambiarPosicion(personaje.position().x()+1, personaje.position().y())
-	game.addVisual(bala)
-	balas.add(bala)
+
+  method perder() {
+	tickMovimientoBalas.stop()
+	tickMovimientoEnemigos.stop()
+	game.clear()
+	game.addVisual(pantallaPerder)
   }
-  method dispararIzquierda() {
-	const bala = new Bala(image = "balaIzquierda.png",seMueveHorizontal = true,cantidadCasillasMovimiento = (-1))
-	bala.cambiarPosicion(personaje.position().x()-1, personaje.position().y())
-	game.addVisual(bala)
-	balas.add(bala)
+
+  method ganaste() {
+	tickMovimientoBalas.stop()
+	tickMovimientoEnemigos.stop()
+	game.clear()
+	game.addVisual(pantallaGanar)
   }
-  method dispararAbajo() {
-	const bala = new Bala(image = "balaAbajo.png",seMueveHorizontal = false,cantidadCasillasMovimiento = (-1))
-	bala.cambiarPosicion(personaje.position().x(), personaje.position().y()-1)
-	game.addVisual(bala)
-	balas.add(bala)
+
+  method añadirEnemigo() {
+	if(enemigos.size() < cantidadEnemigosRonda) {
+		const nuevoEnemigo = new Enemigo()
+		enemigos.add(nuevoEnemigo)
+		game.addVisual(nuevoEnemigo)
+
+		//REVISAR ESTA LINEA. al cruzarse entre enemigos, se hacen daño mutuamente. 
+		game.onCollideDo(nuevoEnemigo, {objeto => objeto.chocarConElEnemigo(nuevoEnemigo)})
+
+
+	}else {
+		game.removeTickEvent("crearEnemigos")
+	}
   }
-  method dispararArriba() {
-	const bala = new Bala(image = "balaArriba.png",seMueveHorizontal = false,cantidadCasillasMovimiento = 1)
-	bala.cambiarPosicion(personaje.position().x(), personaje.position().y()+1)
+
+  method moverEnemigos() {
+	enemigos.forEach({enemigo => enemigo.perseguir(personaje)})
+  }
+
+  method eliminarEnemigo(enemigo) {
+	enemigos.remove(enemigo)
+	cantidadEnemigosDerrotados += 1
+	if(cantidadEnemigosDerrotados == cantidadEnemigosRonda) {
+		self.ganaste()
+	}
+  }
+
+  method dispararBala(imagen, esHorizontal, movimiento) {
+	const bala = new Bala(image = imagen,seMueveHorizontal = esHorizontal,cantidadCasillasMovimiento = movimiento)
+
+	if(esHorizontal) {
+		bala.cambiarPosicion(personaje.position().x() + movimiento, personaje.position().y())
+	}else {
+		bala.cambiarPosicion(personaje.position().x(), personaje.position().y() + movimiento)
+	}
+
 	game.addVisual(bala)
 	balas.add(bala)
   }
 
   method moverBalas() {
 	balas.forEach({bala => bala.mover()})
-	}
-
-	method eliminarBala(bala) {
-		balas.remove(bala)
-	}
-}
-
-object personaje {
-  var vida = 100
-  var image = "indio.png"
-  var posicionInicial = game.center()
-  var position = posicionInicial
-  
-  
-  method vida() = vida
-
-  method position() = position
-  method position(nuevaPosition) {
-	position = nuevaPosition
-  }
-  method image() = "indio.png"
-
-  method cambiarPersonaje(nuevoPersonaje) {
-	  image = nuevoPersonaje
   }
 
-  method modificarVida(valor) {
-	vida += valor
-    if(vida <= 0 ) {
-		game.say(self, "Perdi")
-        juego.perder()
-    }
+  method eliminarBala(bala) {
+	balas.remove(bala)
   }
-
-  method chocarConElEnemigo(enemigo) {
-	self.modificarVida(-(enemigo.danio()))
-	game.say(self, "Dolor")
-  }
-  
 }
 
 
@@ -126,34 +106,18 @@ program misaRicotera {
 	game.title("La Misa Ricotera")
 	game.height(10)
 	game.width(10)
-	
-	//VER COMO FRENAR LOS TICKS UNA VEZ SE PIERDE
-	//cada 5 segundos se crea un enemigo y despues cada un segundo busca al personaje
-	
-	game.onTick(5000, "crearEnemigos", {juego.añadirEnemigo()}) //este tick los hacemos asi para que cuando llegue
-	//al tope de enemigos se pueda frenar
-	const tickMovimientoEnemigos = game.tick(1000, {juego.moverEnemigos()}, false)
-	//cada 100 milisegundos se mueven las balas disparadas por el personaje
-	const tickMovimientoBalas= game.tick(100, {juego.moverBalas()}, false)
-	
-	//colision de el personaje con los enemigos. Si pasa, se le saca vida al personaj
+
 	game.addVisualCharacter(personaje)
 
+	keyboard.w().onPressDo({juego.dispararBala("balaArriba.png", false, 1)})
+	keyboard.a().onPressDo({juego.dispararBala("balaIzquierda.png", true,-1)})
+	keyboard.s().onPressDo({juego.dispararBala("balaAbajo.png", false,-1)})
+	keyboard.d().onPressDo({juego.dispararBala("balaDerecha.png", true, 1)})
 
-	keyboard.a().onPressDo({juego.dispararIzquierda()})
-	keyboard.d().onPressDo({juego.dispararDerecha()})
-	keyboard.s().onPressDo({juego.dispararAbajo()})
-	keyboard.w().onPressDo({juego.dispararArriba()})
-
-	tickMovimientoBalas.start()
-	tickMovimientoEnemigos.start()
-
+	juego.iniciar()
 
 	game.start()
 
-	
-
-	
 }
 
 
