@@ -1,7 +1,7 @@
 import wollok.game.*
-import enemigos.Enemigo
-import armas.Bala
-import personajes.personaje
+import Enemigo.Enemigo
+import Arma.Bala
+import personaje.personaje
 
 object pantallaPerder {
 

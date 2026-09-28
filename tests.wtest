@@ -1,2 +1,110 @@
+import Enemigo.Enemigo
+import Arma.Bala
+import personaje.personaje
+import juego.juego
 
+describe "tests para la clase Bala" {
 
+    test "una bala se crea con sus valores iniciales y los parametros requeridos" {
+        // image, seMueveHorizontal y cantidadCasillasMovimiento no tienen valor por defecto, 
+        // por lo que se deben proveer al instanciar.
+        const bala = new Bala(image = "balaArriba.png", seMueveHorizontal = true, cantidadCasillasMovimiento = 2)
+        
+        assert.equals(1, bala.danio())
+        assert.equals("bala.png", bala.image())
+        assert.equals(game.origin(), bala.position())
+    }
+
+    test "cambiarPosicion actualiza correctamente las coordenadas de la bala" {
+        const bala = new Bala(image = "balaArriba.png", seMueveHorizontal = true, cantidadCasillasMovimiento = 1)
+        
+        bala.cambiarPosicion(4, 5)
+        
+        assert.equals(game.at(4, 5), bala.position())
+    }
+
+    test "mover desplaza la posicion horizontalmente si seMueveHorizontal es verdadero" {
+        const bala = new Bala(image = "balaArriba.png", seMueveHorizontal = true, cantidadCasillasMovimiento = 3)
+        bala.cambiarPosicion(2, 2)
+        
+        bala.mover() // Debería sumar 3 a la coordenada x
+        
+        assert.equals(game.at(5, 2), bala.position())
+    }
+
+    test "mover desplaza la posicion verticalmente si seMueveHorizontal es falso" {
+        const bala = new Bala(image = "balaArriba.png", seMueveHorizontal = false, cantidadCasillasMovimiento = 4)
+        bala.cambiarPosicion(2, 2)
+        
+        bala.mover() // Debería sumar 4 a la coordenada y
+        
+        assert.equals(game.at(2, 6), bala.position())
+    }
+
+    test "chocarConElEnemigo reduce la vida del enemigo usando el danio de la bala" {
+        const bala = new Bala(image = "balaArriba.png", seMueveHorizontal = true, cantidadCasillasMovimiento = 1)
+        
+        // Creamos un objeto simulado (mock) para el enemigo que entienda cambiarVida
+        const enemigoMock = object {
+            var property vida = 3
+            method cambiarVida(cuanto) {
+                vida -= cuanto
+            }
+        }
+        
+        bala.chocarConElEnemigo(enemigoMock)
+        
+        // El daño de la bala por defecto es 1, por lo que 3 - 1 = 2
+        assert.equals(2, enemigoMock.vida())
+    }
+}
+
+describe "tests para el personaje" {
+
+    test "el personaje arranca con la vida inicial y su imagen por defecto" {
+        assert.equals(5, personaje.vida())
+        assert.equals("indio.png", personaje.image())
+    }
+
+    test "modificar la vida de forma positiva aumenta la vida" {
+        const vidaAntes = personaje.vida()
+        personaje.modificarVida(2)
+        
+        assert.equals(vidaAntes + 2, personaje.vida())
+        
+        // Restauramos el estado
+        personaje.modificarVida(-2)
+    }
+
+    test "chocar con un enemigo reduce la vida segun el daño del enemigo" {
+        // Creamos un objeto anónimo que actúe como enemigo y responda a danio()
+        const unEnemigo = new Enemigo()
+        
+        const vidaAntes = personaje.vida()
+        personaje.chocarConElEnemigo(unEnemigo)
+        
+        assert.equals(vidaAntes - 2, personaje.vida())
+        
+        // Restauramos el estado
+        personaje.modificarVida(2)
+    }
+}
+
+describe "tests para la clase Enemigo" {
+
+    test "un enemigo se crea con su vida, daño e imagen iniciales" {
+        const unEnemigo = new Enemigo()
+        
+        assert.equals(2, unEnemigo.vida())
+        assert.equals(1, unEnemigo.danio())
+        assert.equals("enemigo.png", unEnemigo.image())
+    }
+
+    test "cambiarVida reduce la vida del enemigo según el valor pasado" {
+        const unEnemigo = new Enemigo()
+        
+        unEnemigo.cambiarVida(1)
+        
+        assert.equals(1, unEnemigo.vida())
+    }
+}
