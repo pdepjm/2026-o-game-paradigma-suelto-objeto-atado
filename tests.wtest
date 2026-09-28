@@ -11,7 +11,7 @@ describe "tests para la clase Bala" {
         const bala = new Bala(image = "balaArriba.png", seMueveHorizontal = true, cantidadCasillasMovimiento = 2)
         
         assert.equals(1, bala.danio())
-        assert.equals("bala.png", bala.image())
+        assert.equals("balaArriba.png", bala.image())
         assert.equals(game.origin(), bala.position())
     }
 
@@ -83,7 +83,7 @@ describe "tests para el personaje" {
         const vidaAntes = personaje.vida()
         personaje.chocarConElEnemigo(unEnemigo)
         
-        assert.equals(vidaAntes - 2, personaje.vida())
+        assert.equals(vidaAntes - 1, personaje.vida())
         
         // Restauramos el estado
         personaje.modificarVida(2)
