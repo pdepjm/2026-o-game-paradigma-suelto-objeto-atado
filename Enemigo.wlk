@@ -1,8 +1,7 @@
-import juego.juego
+import juego.Juego
 
 class Enemigo {
   var vida = 2
-  var image = "enemigo.png"
   const danio = 1
 
   method vida() = vida
@@ -13,19 +12,17 @@ class Enemigo {
   var posicionActual = posicionInicial
 
   method position() = posicionActual
-  method image() = image
+
+  method image() = "enemigo.png"
 
   method cambiarVida(vidaARestar){
     vida -= vidaARestar
     if(vida <= 0) {
-      juego.eliminarEnemigo(self)
+      Juego.eliminarEnemigo(self)
       game.removeVisual(self)
     }
   }
 
-  method cambiarEnemigo(nuevoEnemigo) {
-	image = nuevoEnemigo
-  }
 
   method cambiarPosicion(x, y) {
     const xNueva = posicionActual.x() + x
@@ -48,11 +45,13 @@ class Enemigo {
         self.cambiarPosicion(0,1)
       }
     }
-
-    //REVISAR QUE PASA CUANDO 2 ENEMIGOS SE CRUZAN (en este momento, se superponen y no se puede ver al enemigo que queda debajo)
-
-
-
   }
+
+}
+
+class LoboSuelto inherits Enemigo{
+  override method image() = "loboSuelto.png"
+  override method vida() = 10
+  override method danio() = 2
 
 }

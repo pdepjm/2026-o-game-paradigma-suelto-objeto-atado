@@ -1,6 +1,6 @@
 import Enemigo.Enemigo
-import Arma.Bala
-import personaje.personaje
+import Arma.*
+import personaje.*
 import juego.juego
 
 describe "tests para la clase Bala" {

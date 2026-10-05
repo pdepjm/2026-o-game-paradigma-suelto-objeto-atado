@@ -1,14 +1,12 @@
-import juego.juego
-class Bala {
-	var danio = 1
+import Nivel.Juego
+class ArmaDeFuego {
 	var position = game.origin()
-	var image
-    const seMueveHorizontal
-    const cantidadCasillasMovimiento
+    const seMueveHorizontal = false
+    const cantidadCasillasMovimiento = 1
 
-	method image() = image
+	method image() = "bala.png"
 
-	method danio() = danio
+	method danio() = 1
 	method position() = position
 
 	method cambiarPosicion(x, y) {
@@ -34,4 +32,14 @@ class Bala {
         game.removeVisual(self)
         juego.eliminarBala(self)
     }
+}
+
+object microfono inherits ArmaDeFuego {
+  override method image() = "bala.png"
+  override method danio() = 3
+}
+
+object guitarra inherits ArmaDeFuego {
+    override method image() = "guitarra.png"
+    override method danio() = 5
 }
