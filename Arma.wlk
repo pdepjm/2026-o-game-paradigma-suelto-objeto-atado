@@ -1,19 +1,23 @@
-import Nivel.Juego
+import Nivel.*
 class ArmaDeFuego {
+    var danio
 	var position = game.origin()
     const seMueveHorizontal = false
     const cantidadCasillasMovimiento = 1
 
 	method image() = "bala.png"
 
-	method danio() = 1
+    method modificarDanio(danioSumado) {
+        danio += danioSumado
+    }
+	method danio() = danio
 	method position() = position
 
 	method cambiarPosicion(x, y) {
 		position = game.at(x,y)
 	}
 
-    method mover() {
+    method mover(juego) {
         if(seMueveHorizontal) {
             position = game.at(position.x()+cantidadCasillasMovimiento, position.y())
         }else {
@@ -26,20 +30,11 @@ class ArmaDeFuego {
         }
     }
     
-    method chocarConElEnemigo(enemigo) {
-        enemigo.cambiarVida(danio)
+    method chocarConElEnemigo(enemigo,juego) {
+        enemigo.cambiarVida(self.danio())
         game.say(enemigo, "Auch")
         game.removeVisual(self)
         juego.eliminarBala(self)
     }
 }
-
-object microfono inherits ArmaDeFuego {
-  override method image() = "bala.png"
-  override method danio() = 3
-}
-
-object guitarra inherits ArmaDeFuego {
-    override method image() = "guitarra.png"
-    override method danio() = 5
-}
+ 

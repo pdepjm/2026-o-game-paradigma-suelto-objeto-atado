@@ -1,4 +1,4 @@
-import arma.*
+import Arma.*
 import wollok.game.*
 import personaje.*
 import Enemigo.*
@@ -6,18 +6,23 @@ import Nivel.*
 import Pantalla.*
 
 
-class Juego{
+object juego{
   //const enemigosTotalesJuego = [LoboSuelto] (cada nivel decide que enemigos pueden aparecer) //   Aca irian todos los que tenemos, sin los bosses
+  const cantidadNiveles = 5
   const enemigos = []
+  var personaje = null
   //var cantidadEnemigosRonda = 3 (lo deciden los niveles)
   var cantidadEnemigosDerrotados = 0
+  var nivel = 1
   //var tickAparicionEnemigos = 5000 (lo deciden los niveles)
 
   //method cantidadEnemigosRonda() = cantidadEnemigosRonda
   //method tickAparicionEnemigos() = tickAparicionEnemigos  
   
 
-  var nivelActual = nivel1 
+  var nivelActual = new Nivel(cantidadEnemigosRonda=3, tickAparicionEnemigos= 5000, fondo = "pantallaInicial.png") 
+  
+  
   //los enemigos se mueven cada 1 segundo
   const tickMovimientoEnemigos = game.tick(1000, {self.moverEnemigos()}, false)
   //cada 100 milisegundos se mueven las balas disparadas por el personaje
@@ -29,89 +34,95 @@ class Juego{
     game.onTick(nivelActual.tickAparicionEnemigos(), "crearEnemigos", {self.añadirEnemigo()})
   }
 
-  method iniciar() {
-	//cada 5 segundos se crea un enemigo y despues cada un segundo busca al personaje
-	//este tick los hacemos asi para que cuando llegue al tope de enemigos se pueda frenar
-  self.iniciarNivel()
-  //game.onTick(tickAparicionEnemigos, "crearEnemigos", {self.añadirEnemigo()}) 
+  method cambiarPersonaje(nuevoPersonaje) {
+    personaje = nuevoPersonaje
+  }
 
-	tickMovimientoBalas.start()
-	tickMovimientoEnemigos.start()		
+  method iniciar() {
+    //cada 5 segundos se crea un enemigo y despues cada un segundo busca al personaje
+    //este tick los hacemos asi para que cuando llegue al tope de enemigos se pueda frenar
+    self.iniciarNivel()
+    //game.onTick(tickAparicionEnemigos, "crearEnemigos", {self.añadirEnemigo()}) 
+
+    tickMovimientoBalas.start()
+    tickMovimientoEnemigos.start()		
   }												
 
 
   method perder() {
-	tickMovimientoBalas.stop()
-	tickMovimientoEnemigos.stop()
-	game.clear()
-	game.addVisual(gameOver)
+    tickMovimientoBalas.stop()
+    tickMovimientoEnemigos.stop()
+    game.clear()
+    game.addVisual(gameOver)
   }
 
   method ganaste() {
-	tickMovimientoBalas.stop()
-	tickMovimientoEnemigos.stop()
-	game.clear()
-	game.addVisual(pantallaWin)
+    tickMovimientoBalas.stop()
+    tickMovimientoEnemigos.stop()
+    game.clear()
+    game.addVisual(pantallaWin)
   }
 
   method terminarNivel(){
-    if(nivelActual.esUltimoNivel()){
-      self.ganaste //frase al estilo de "TERMINASTE EL JUEGOOO WOOW"
+    if(nivel == cantidadNiveles){
+      self.ganaste() //frase al estilo de "TERMINASTE EL JUEGOOO WOOW"
     }else{
-      nivelActual=nivelActual.siguienteNivel()
+      nivel += 1
+      const cantidadEnemigosRonda = 10 + (nivel * 4)
+      const tickAparicionEnemigos = 5000 + (nivel * 500)
+      const fondo = "fondoNivel" + nivel + ".png"
+      nivelActual= new Nivel(cantidadEnemigosRonda = cantidadEnemigosRonda, tickAparicionEnemigos = tickAparicionEnemigos, fondo = fondo)
       cantidadEnemigosDerrotados= 0
       self.iniciarNivel()
     }
   }
 
   method añadirEnemigo() {
-	if(enemigos.size() < nivelActual.cantidadEnemigosRonda()) { 
+	  if(enemigos.size() < nivelActual.cantidadEnemigosRonda()) { 
 		
-		const nuevoEnemigo = nivelActual.enemigosPosibles().anyOne() //OJO ESTO AAAAA (new?? xq el enemigo hereda de Enemigos)
-		enemigos.add(nuevoEnemigo)
-		game.addVisual(nuevoEnemigo)
+      const nuevoEnemigo = nivelActual.enemigosPosibles().anyOne() //OJO ESTO AAAAA (new?? xq el enemigo hereda de Enemigos)
+      nuevoEnemigo.generarPosInicial()
+      enemigos.add(nuevoEnemigo)
+      game.addVisual(nuevoEnemigo)
 
-		//REVISAR ESTA LINEA. al cruzarse entre enemigos, se hacen daño mutuamente. 
-		game.onCollideDo(nuevoEnemigo, {objeto => objeto.chocarConElEnemigo(nuevoEnemigo)})
+      //REVISAR ESTA LINEA. al cruzarse entre enemigos, se hacen daño mutuamente. 
+      game.onCollideDo(nuevoEnemigo, {objeto => objeto.chocarConElEnemigo(nuevoEnemigo,self)})
 
-
-	}else {
-		game.removeTickEvent("crearEnemigos")
-	}
+	  }else {
+		  game.removeTickEvent("crearEnemigos")
+	  }
   }
 
   method moverEnemigos() {
-	enemigos.forEach({enemigo => enemigo.perseguir(personaje)})
+    enemigos.forEach({enemigo => enemigo.perseguir(personaje)})
   }
 
   method eliminarEnemigo(enemigo) {
-	enemigos.remove(enemigo)
-	cantidadEnemigosDerrotados += 1
-	if(cantidadEnemigosDerrotados == nivelActual.cantidadEnemigosRonda()) {
-		self.ganaste()
-	}
+    enemigos.remove(enemigo)
+    cantidadEnemigosDerrotados += 1
+    if(cantidadEnemigosDerrotados == nivelActual.cantidadEnemigosRonda()) {
+      self.ganaste()
+    }
   }
 
-  
-
   method moverBalas() {
-	balas.forEach({bala => bala.mover()})
+	  personaje.balas().forEach({bala => bala.mover(self)})
   }
 
   method eliminarBala(bala) {
-	balas.remove(bala)
+	  personaje.balas().remove(bala)
   }
 }
 
 program misaRicotera {
 	game.title("La Misa Ricotera")
-	game.height(10)
-	game.width(10)
+	game.height(20)
+	game.width(20)
 
 
 	var personaje = indio
 	
-	const juego = new Juego()
+	juego.cambiarPersonaje(personaje)
 	game.addVisualCharacter(personaje)
 
 	game.addVisual(pantallaInicial)
@@ -119,11 +130,11 @@ program misaRicotera {
 	keyboard.enter().onPressDo({
     if(game.hasVisual(pantallaInicial)){
       game.removeVisual(pantallaInicial)
-      if(!juego.fueIniciado()){
-        juego.iniciarJuego()
-      } else{
-        juego.reiniciarJuego()
-      }
+      //if(!juego.fueIniciado()){
+      //  juego.iniciarJuego()
+     // } else{
+      //  juego.reiniciarJuego()
+      //}
     }
     if(game.hasVisual(gameOver)){
       game.removeVisual(gameOver)
@@ -147,6 +158,8 @@ program misaRicotera {
 	keyboard.a().onPressDo({personaje.dispararBala("balaIzquierda.png", true,-1)})
 	keyboard.s().onPressDo({personaje.dispararBala("balaAbajo.png", false,-1)})
 	keyboard.d().onPressDo({personaje.dispararBala("balaDerecha.png", true, 1)})
+
+  
 
 	juego.iniciar()
 
