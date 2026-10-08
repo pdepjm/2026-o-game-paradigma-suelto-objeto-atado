@@ -7,23 +7,33 @@ import Pantalla.*
 
 
 class Juego{
-  const enemigosTotalesJuego = [LoboSuelto] //Aca irian todos los que tenemos, sin los bosses
+  //const enemigosTotalesJuego = [LoboSuelto] (cada nivel decide que enemigos pueden aparecer) //   Aca irian todos los que tenemos, sin los bosses
   const enemigos = []
-  var cantidadEnemigosRonda = 3
+  //var cantidadEnemigosRonda = 3 (lo deciden los niveles)
   var cantidadEnemigosDerrotados = 0
-  var tickAparicionEnemigos = 5000
+  //var tickAparicionEnemigos = 5000 (lo deciden los niveles)
 
-  method cantidadEnemigosRonda() = cantidadEnemigosRonda
-  method tickAparicionEnemigos() = tickAparicionEnemigos  
+  //method cantidadEnemigosRonda() = cantidadEnemigosRonda
+  //method tickAparicionEnemigos() = tickAparicionEnemigos  
+  
+
+  var nivelActual = nivel1 
   //los enemigos se mueven cada 1 segundo
   const tickMovimientoEnemigos = game.tick(1000, {self.moverEnemigos()}, false)
   //cada 100 milisegundos se mueven las balas disparadas por el personaje
   const tickMovimientoBalas= game.tick(100, {self.moverBalas()}, false)
 
+  method iniciarNivel(){
+    game.boardGround(nivelActual.fondo())
+
+    game.onTick(nivelActual.tickAparicionEnemigos(), "crearEnemigos", {self.añadirEnemigo()})
+  }
+
   method iniciar() {
 	//cada 5 segundos se crea un enemigo y despues cada un segundo busca al personaje
 	//este tick los hacemos asi para que cuando llegue al tope de enemigos se pueda frenar
-	game.onTick(tickAparicionEnemigos, "crearEnemigos", {self.añadirEnemigo()}) 
+  self.iniciarNivel()
+  //game.onTick(tickAparicionEnemigos, "crearEnemigos", {self.añadirEnemigo()}) 
 
 	tickMovimientoBalas.start()
 	tickMovimientoEnemigos.start()		
@@ -44,10 +54,20 @@ class Juego{
 	game.addVisual(pantallaWin)
   }
 
+  method terminarNivel(){
+    if(nivelActual.esUltimoNivel()){
+      self.ganaste //frase al estilo de "TERMINASTE EL JUEGOOO WOOW"
+    }else{
+      nivelActual=nivelActual.siguienteNivel()
+      cantidadEnemigosDerrotados= 0
+      self.iniciarNivel()
+    }
+  }
+
   method añadirEnemigo() {
-	if(enemigos.size() < cantidadEnemigosRonda) {
+	if(enemigos.size() < nivelActual.cantidadEnemigosRonda()) { 
 		
-		const nuevoEnemigo = enemigosTotalesJuego.anyOne()
+		const nuevoEnemigo = nivelActual.enemigosPosibles().anyOne() //OJO ESTO AAAAA (new?? xq el enemigo hereda de Enemigos)
 		enemigos.add(nuevoEnemigo)
 		game.addVisual(nuevoEnemigo)
 
@@ -67,7 +87,7 @@ class Juego{
   method eliminarEnemigo(enemigo) {
 	enemigos.remove(enemigo)
 	cantidadEnemigosDerrotados += 1
-	if(cantidadEnemigosDerrotados == cantidadEnemigosRonda) {
+	if(cantidadEnemigosDerrotados == nivelActual.cantidadEnemigosRonda()) {
 		self.ganaste()
 	}
   }
@@ -91,7 +111,7 @@ program misaRicotera {
 
 	var personaje = indio
 	
-	var juego = nivel1
+	const juego = new Juego()
 	game.addVisualCharacter(personaje)
 
 	game.addVisual(pantallaInicial)
