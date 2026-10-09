@@ -28,15 +28,34 @@ object juego{
   //cada 100 milisegundos se mueven las balas disparadas por el personaje
   const tickMovimientoBalas= game.tick(100, {self.moverBalas()}, false)
 
+
+
   method iniciarNivel(){
     game.boardGround(nivelActual.fondo())
 
     game.onTick(nivelActual.tickAparicionEnemigos(), "crearEnemigos", {self.añadirEnemigo()})
   }
 
+  method terminarNivel(){
+    if(nivel == cantidadNiveles){
+      self.ganaste() //frase al estilo de "TERMINASTE EL JUEGOOO WOOW"
+    }else{
+      
+      nivel += 1
+      const cantidadEnemigosRonda = 10 + (nivel * 4)
+      const tickAparicionEnemigos = 5000 + (nivel * 500)
+      const fondo = "fondoNivel" + nivel + ".png"
+      nivelActual= new Nivel(cantidadEnemigosRonda = cantidadEnemigosRonda, tickAparicionEnemigos = tickAparicionEnemigos, fondo = fondo)
+      cantidadEnemigosDerrotados= 0
+      self.iniciarNivel()
+    }
+  }
+
+
   method cambiarPersonaje(nuevoPersonaje) {
     personaje = nuevoPersonaje
   }
+
 
   method iniciar() {
     //cada 5 segundos se crea un enemigo y despues cada un segundo busca al personaje
@@ -48,6 +67,12 @@ object juego{
     tickMovimientoEnemigos.start()		
   }												
 
+ method ganaste() {
+    tickMovimientoBalas.stop()
+    tickMovimientoEnemigos.stop()
+    game.clear()
+    game.addVisual(pantallaWin)
+  }
 
   method perder() {
     tickMovimientoBalas.stop()
@@ -56,26 +81,7 @@ object juego{
     game.addVisual(gameOver)
   }
 
-  method ganaste() {
-    tickMovimientoBalas.stop()
-    tickMovimientoEnemigos.stop()
-    game.clear()
-    game.addVisual(pantallaWin)
-  }
-
-  method terminarNivel(){
-    if(nivel == cantidadNiveles){
-      self.ganaste() //frase al estilo de "TERMINASTE EL JUEGOOO WOOW"
-    }else{
-      nivel += 1
-      const cantidadEnemigosRonda = 10 + (nivel * 4)
-      const tickAparicionEnemigos = 5000 + (nivel * 500)
-      const fondo = "fondoNivel" + nivel + ".png"
-      nivelActual= new Nivel(cantidadEnemigosRonda = cantidadEnemigosRonda, tickAparicionEnemigos = tickAparicionEnemigos, fondo = fondo)
-      cantidadEnemigosDerrotados= 0
-      self.iniciarNivel()
-    }
-  }
+ 
 
   method añadirEnemigo() {
 	  if(enemigos.size() < nivelActual.cantidadEnemigosRonda()) { 
@@ -86,7 +92,7 @@ object juego{
       game.addVisual(nuevoEnemigo)
 
       //REVISAR ESTA LINEA. al cruzarse entre enemigos, se hacen daño mutuamente. 
-      game.onCollideDo(nuevoEnemigo, {objeto => objeto.chocarConElEnemigo(nuevoEnemigo,self)})
+      game.onCollideDo(nuevoEnemigo, {objeto => objeto.chocarConElEnemigo(nuevoEnemigo)})
 
 	  }else {
 		  game.removeTickEvent("crearEnemigos")
@@ -94,19 +100,19 @@ object juego{
   }
 
   method moverEnemigos() {
-    enemigos.forEach({enemigo => enemigo.perseguir(personaje)})
+    enemigos.forEach({enemigo => enemigo.moverse(personaje)})
   }
 
   method eliminarEnemigo(enemigo) {
     enemigos.remove(enemigo)
     cantidadEnemigosDerrotados += 1
     if(cantidadEnemigosDerrotados == nivelActual.cantidadEnemigosRonda()) {
-      self.ganaste()
+      self.terminarNivel()
     }
   }
 
   method moverBalas() {
-	  personaje.balas().forEach({bala => bala.mover(self)})
+	  personaje.balas().forEach({bala => bala.mover()})
   }
 
   method eliminarBala(bala) {

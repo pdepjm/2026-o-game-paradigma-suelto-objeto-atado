@@ -1,4 +1,5 @@
 import Nivel.*
+import juego.juego
 class ArmaDeFuego {
     var danio
 	var position = game.origin()
@@ -17,7 +18,7 @@ class ArmaDeFuego {
 		position = game.at(x,y)
 	}
 
-    method mover(juego) {
+    method mover() {
         if(seMueveHorizontal) {
             position = game.at(position.x()+cantidadCasillasMovimiento, position.y())
         }else {
@@ -30,7 +31,7 @@ class ArmaDeFuego {
         }
     }
     
-    method chocarConElEnemigo(enemigo,juego) {
+    method chocarConElEnemigo(enemigo) {
         enemigo.cambiarVida(self.danio())
         game.say(enemigo, "Auch")
         game.removeVisual(self)
