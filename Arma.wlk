@@ -1,12 +1,14 @@
 import Nivel.*
-import juego.juego
+import juego.*
+import Administracion.administracionEntidades
 class ArmaDeFuego {
     var danio
+    var image = ""
 	var position = game.origin()
     const seMueveHorizontal = false
     const cantidadCasillasMovimiento = 1
 
-	method image() = "bala.png"
+	method image() = image
 
     method modificarDanio(danioSumado) {
         danio += danioSumado
@@ -27,7 +29,7 @@ class ArmaDeFuego {
         
         if(position.x() > game.width() || position.x() < 0 || position.y() > game.height() || position.y() < 0){
             game.removeVisual(self)
-            juego.eliminarBala(self)
+            administracionEntidades.eliminarBala(self)
         }
     }
     
@@ -35,7 +37,7 @@ class ArmaDeFuego {
         enemigo.cambiarVida(self.danio())
         game.say(enemigo, "Auch")
         game.removeVisual(self)
-        juego.eliminarBala(self)
+        administracionEntidades.eliminarBala(self)
     }
 }
  

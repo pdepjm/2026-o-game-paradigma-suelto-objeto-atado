@@ -3,7 +3,7 @@ import personaje.*
 
 object pantallaInicial{
     var property position = game.origin()
-    var property spriteMenu = "pantallaInicial.png"
+    var property spriteMenu = "pantallaInicial0.png"
     method image() = spriteMenu
     const personajes = [indio, skay]
     var property personajeSeleccionado = 0

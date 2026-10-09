@@ -57,8 +57,8 @@ class Personaje {
     method balas() = balas
 
     method dispararBala(imagen, esHorizontal, movimiento) {
-	const bala = new ArmaDeFuego(danio = armaEnMano.danio(),seMueveHorizontal = esHorizontal,cantidadCasillasMovimiento = movimiento)
-
+	const bala = new ArmaDeFuego(danio = armaEnMano.danio(),seMueveHorizontal = esHorizontal,cantidadCasillasMovimiento = movimiento, image = imagen)
+    
 	if(esHorizontal) {
 		bala.cambiarPosicion(self.position().x() + movimiento, self.position().y())
 	}else {
