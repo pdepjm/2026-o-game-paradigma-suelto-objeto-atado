@@ -31,7 +31,7 @@ object pantallaInicial{
 
 object gameOver{
     var property position = game.origin()
-    method image() = "game_over.png"
+    method image() = "pantallaPerdido.png"
 }
 
 object pantallaWin{

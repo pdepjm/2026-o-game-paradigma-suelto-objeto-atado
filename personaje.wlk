@@ -1,8 +1,7 @@
 import juego.juego
 import Arma.*
+import Powerup.*
 
-// de momento solo hay un personaje, pero si se quisiera agregar mas personajes, 
-// se podria hacer una clase personaje y que cada uno tenga su propia vida, posicion, etc
 
 class Personaje {
     var vida = 5
@@ -26,7 +25,7 @@ class Personaje {
     } 
     
    method agarrarPower(powerUp) {
-        if (powerUpBoost.contains(powerUp)) {
+        if (powerUpBoost.contains(powerUp.tipo())) {
             // Usa los multiplicadores que cada personaje define a su manera
             const vidaOtorgada = self.multiplicadorVidaBoost(powerUp.vida())
             const dañoOtorgado = self.multiplicadorDanioBoost(powerUp.daño())
@@ -71,20 +70,17 @@ class Personaje {
     
 }
 
-object indio inherits Personaje(vida = 10, image = "indio.png", powerUpBoost = [], armaEnMano = new ArmaDeFuego(danio = 2, cantidadCasillasMovimiento = 1)) {
-    
-    //Hacer logica para los powerUps que los boostean
+object indio inherits Personaje(vida = 10, image = "indio.png", powerUpBoost = ["Defensa"], armaEnMano = new ArmaDeFuego(danio = 2, cantidadCasillasMovimiento = 1)) {
     override method multiplicadorVidaBoost(vidaPower){
         return vidaPower * 7
     }
     override method multiplicadorDanioBoost(danioPower){
         return danioPower * 8
     }
-
 }
 
 
-object skay inherits Personaje(vida = 8, image = "skay.png", powerUpBoost = [], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
+object skay inherits Personaje(vida = 8, image = "skay.png", powerUpBoost = ["Arma"], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
     
     //Hacer logica para los powerUps que los boostean
     override method multiplicadorVidaBoost(vidaPower){

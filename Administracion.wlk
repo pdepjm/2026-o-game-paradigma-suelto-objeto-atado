@@ -1,5 +1,6 @@
 import juego.juego
 import personaje.Personaje
+import Powerup.*
 
 object administracionEntidades {
   const enemigos = []
@@ -62,6 +63,21 @@ object administracionEntidades {
   method frenarTicks() {
     tickMovimientoBalas.stop()
     tickMovimientoEnemigos.stop()
+  }
+
+  const powerUpsPosibles = [
+    { => new PuaDeGuitarra() }, 
+    { => new Lentes() }
+  ]
+
+  method añadirPowerUp() {
+    const nuevoPowerUp = powerUpsPosibles.anyOne().apply()
+      
+    nuevoPowerUp.generarPosInicial()
+    game.addVisual(nuevoPowerUp)
+      
+    game.onCollideDo(nuevoPowerUp, { objeto => nuevoPowerUp.serAgarradoPor(objeto) })
+    
   }
 
 }

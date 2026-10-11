@@ -4,6 +4,7 @@ import personaje.*
 import Enemigo.*
 import Nivel.*
 import Pantalla.*
+import Powerup.*
 import Administracion.administracionEntidades
 
 object juego{
@@ -24,12 +25,14 @@ object juego{
 
   method iniciarNivel(){
     game.boardGround(nivelActual.fondo())
-
+    
     game.onTick(nivelActual.tickAparicionEnemigos(), "crearEnemigos", {administracionEntidades.añadirEnemigo()})
+    game.onTick(8000, "crearPowerUps", { administracionEntidades.añadirPowerUp() })
   }
 
   method terminarNivel(){
     game.removeTickEvent("crearEnemigos")
+    game.removeTickEvent("crearPowerUps")
     if(nivel == cantidadNiveles){
       self.ganaste()
     }else{
@@ -75,6 +78,7 @@ object juego{
 
   method perder() {
     game.removeTickEvent("crearEnemigos")
+    game.removeTickEvent("crearPowerUps")
     administracionEntidades.frenarTicks()
     
     game.clear()
@@ -83,10 +87,6 @@ object juego{
 
 
 }
-
-  
-
-
 
 program misaRicotera {
 	game.title("La Misa Ricotera")
@@ -119,17 +119,17 @@ program misaRicotera {
     }
   })
 
-  keyboard.right().whilePressedDo({
+  keyboard.right().onPressDo({
       if(game.hasVisual(pantallaInicial)){
         pantallaInicial.avanzarPersonaje()
       }
-    }, 500)
+  })
 
-    keyboard.left().whilePressedDo({
+    keyboard.left().onPressDo({
       if(game.hasVisual(pantallaInicial)){
         pantallaInicial.retrocederPersonaje()
       }
-    }, 500)
+  })
 
 	keyboard.w().onPressDo({personaje.dispararBala("balaArriba.png", false, 1)})
 	keyboard.a().onPressDo({personaje.dispararBala("balaIzquierda.png", true,-1)})
@@ -141,5 +141,4 @@ program misaRicotera {
 	game.start()
 
 }
-
 

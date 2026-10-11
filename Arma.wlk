@@ -39,5 +39,9 @@ class ArmaDeFuego {
         game.removeVisual(self)
         administracionEntidades.eliminarBala(self)
     }
+
+    method agarrarPower(powerUp) {
+    // No hace nada
+    }
 }
  

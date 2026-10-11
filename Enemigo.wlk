@@ -46,6 +46,9 @@ class Enemigo {
   }
   method moverse(personaje)
   
+  method agarrarPower(powerUp) {
+    // No hace nada
+}
 
 }
 
