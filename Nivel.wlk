@@ -1,13 +1,16 @@
 import Enemigo.*
+import wollok.game.*
 
 class Nivel {
      const cantidadEnemigosRonda
      const tickAparicionEnemigos
-     const fondo
+     const image
+     const position = game.center()
      const enemigosPosibles = [{=> new LoboSuelto()}] //con esto al hacer apply() 
      //con el anyOne se crea una nueva instancia de enemigo
      method enemigosPosibles()= enemigosPosibles
      method tickAparicionEnemigos() = tickAparicionEnemigos
      method cantidadEnemigosRonda() = cantidadEnemigosRonda
-     method fondo()= fondo
+     method image()= image
+     method position() = position
 }

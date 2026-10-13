@@ -18,13 +18,13 @@ object juego{
   var nivel = 1
   //var tickAparicionEnemigos = 5000 (lo deciden los niveles)
 
-  var nivelActual = new Nivel(cantidadEnemigosRonda=3, tickAparicionEnemigos= 5000, fondo = "nivel1.png") 
+  var nivelActual = new Nivel(cantidadEnemigosRonda=3, tickAparicionEnemigos= 5000, image = "fondoNivel1.png") 
 
   method personaje() = personaje
   method nivelActual() = nivelActual  
 
   method iniciarNivel(){
-    game.boardGround(nivelActual.fondo())
+    //game.addVisual(nivelActual) ver como agregar bien el fondo
     
     game.onTick(nivelActual.tickAparicionEnemigos(), "crearEnemigos", {administracionEntidades.añadirEnemigo()})
     game.onTick(8000, "crearPowerUps", { administracionEntidades.añadirPowerUp() })
@@ -32,6 +32,7 @@ object juego{
 
   method terminarNivel(){
     administracionEntidades.eliminarTicks()
+    game.removeVisual(nivelActual)
     if(nivel == cantidadNiveles){
       self.ganaste()
     }else{
@@ -46,7 +47,7 @@ object juego{
     const cantidadEnemigosRonda = 10 + (nivel * 4)
     const tickAparicionEnemigos = 3000 - (nivel * 500)
     const fondo = "fondoNivel" + nivel + ".png"
-    nivelActual= new Nivel(cantidadEnemigosRonda = cantidadEnemigosRonda, tickAparicionEnemigos = tickAparicionEnemigos, fondo = fondo)
+    nivelActual= new Nivel(cantidadEnemigosRonda = cantidadEnemigosRonda, tickAparicionEnemigos = tickAparicionEnemigos, image = fondo)
       
     self.iniciarNivel()
   }
@@ -95,6 +96,8 @@ program misaRicotera {
 	game.height(15)
 	game.width(20)
   game.cellSize(50)
+
+  
 
 
 	

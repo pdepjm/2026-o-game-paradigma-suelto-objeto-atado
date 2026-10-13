@@ -52,7 +52,7 @@ class Enemigo {
 
 }
 
-class LoboSuelto inherits Enemigo(vida = 10, danio = 2,image = "LoboSuelto.png"){
+class LoboSuelto inherits Enemigo(vida = 10, danio = 2,image = "loboSuelto.png"){
 
   override method moverse(personaje) {
       if(self.position().x() > personaje.position().x()){
