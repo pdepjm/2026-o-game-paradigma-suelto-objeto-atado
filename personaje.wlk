@@ -91,3 +91,30 @@ object skay inherits Personaje(vida = 8, image = "skay.png", powerUpBoost = ["Ar
     }
 
 }
+
+object semilla inherits Personaje(vida = 5, image = "semilla.png", powerUpBoost = ["Arma"], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
+     override method multiplicadorVidaBoost(vidaPower){
+        return vidaPower * 2
+    }
+    override method multiplicadorDanioBoost(danioPower){
+        return danioPower * 2
+    }
+}
+
+object walter inherits Personaje(vida = 5, image = "walter.png", powerUpBoost = ["Arma"], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
+     override method multiplicadorVidaBoost(vidaPower){
+        return vidaPower * 2
+    }
+    override method multiplicadorDanioBoost(danioPower){
+        return danioPower * 2
+    }
+}
+
+object sergio inherits Personaje(vida = 5, image = "sergio.png", powerUpBoost = ["Arma"], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
+     override method multiplicadorVidaBoost(vidaPower){
+        return vidaPower * 2
+    }
+    override method multiplicadorDanioBoost(danioPower){
+        return danioPower * 2
+    }
+}

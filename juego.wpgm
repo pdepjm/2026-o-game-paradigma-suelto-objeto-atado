@@ -9,7 +9,7 @@ import Administracion.administracionEntidades
 
 object juego{
   //const enemigosTotalesJuego = [LoboSuelto] (cada nivel decide que enemigos pueden aparecer) //   Aca irian todos los que tenemos, sin los bosses
-  const cantidadNiveles = 1
+  const cantidadNiveles = 3
   
   var personaje = null
   var fueIniciado = false
@@ -31,22 +31,25 @@ object juego{
   }
 
   method terminarNivel(){
-    game.removeTickEvent("crearEnemigos")
-    game.removeTickEvent("crearPowerUps")
+    administracionEntidades.eliminarTicks()
     if(nivel == cantidadNiveles){
       self.ganaste()
     }else{
       
       nivel += 1
-      const cantidadEnemigosRonda = 10 + (nivel * 4)
-      const tickAparicionEnemigos = 3000 - (nivel * 500)
-      const fondo = "fondoNivel" + nivel + ".png"
-      nivelActual= new Nivel(cantidadEnemigosRonda = cantidadEnemigosRonda, tickAparicionEnemigos = tickAparicionEnemigos, fondo = fondo)
-      
-      self.iniciarNivel()
+      game.removeVisual(personaje)
+      game.addVisual(pantallaFinRonda)
     }
   }
 
+  method arrancarNuevoNivel() {
+    const cantidadEnemigosRonda = 10 + (nivel * 4)
+    const tickAparicionEnemigos = 3000 - (nivel * 500)
+    const fondo = "fondoNivel" + nivel + ".png"
+    nivelActual= new Nivel(cantidadEnemigosRonda = cantidadEnemigosRonda, tickAparicionEnemigos = tickAparicionEnemigos, fondo = fondo)
+      
+    self.iniciarNivel()
+  }
 
   method cambiarPersonaje(nuevoPersonaje) {
     personaje = nuevoPersonaje
@@ -77,8 +80,7 @@ object juego{
   }
 
   method perder() {
-    game.removeTickEvent("crearEnemigos")
-    game.removeTickEvent("crearPowerUps")
+    administracionEntidades.eliminarTicks()
     administracionEntidades.frenarTicks()
     
     game.clear()
@@ -91,7 +93,7 @@ object juego{
 program misaRicotera {
 	game.title("La Misa Ricotera")
 	game.height(15)
-	game.width(15)
+	game.width(20)
   game.cellSize(50)
 
 
@@ -116,6 +118,11 @@ program misaRicotera {
     if(game.hasVisual(gameOver)){
       game.removeVisual(gameOver)
       game.addVisual(pantallaInicial)
+    }
+    if(game.hasVisual(pantallaFinRonda)) {
+      game.removeVisual(pantallaFinRonda)
+      game.addVisualCharacter(personaje)
+      juego.arrancarNuevoNivel()
     }
   })
 

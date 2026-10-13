@@ -65,6 +65,11 @@ object administracionEntidades {
     tickMovimientoEnemigos.stop()
   }
 
+  method eliminarTicks() {
+    game.removeTickEvent("crearEnemigos")
+    game.removeTickEvent("crearPowerUps")
+  }
+
   const powerUpsPosibles = [
     { => new PuaDeGuitarra() }, 
     { => new Lentes() }

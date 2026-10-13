@@ -5,7 +5,7 @@ object pantallaInicial{
     var property position = game.origin()
     var property spriteMenu = "pantallaInicial0.png"
     method image() = spriteMenu
-    const personajes = [indio, skay]
+    const personajes = [indio, skay, semilla, sergio, walter]
     var property personajeSeleccionado = 0
 
     method avanzarPersonaje() {
@@ -37,4 +37,9 @@ object gameOver{
 object pantallaWin{
     var property position = game.origin()
     method image() = "pantalla_win.png"
+}
+
+object pantallaFinRonda {
+    var property position = game.origin()
+    method image() = "pantallaFinRonda.png"
 }
