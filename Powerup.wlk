@@ -14,8 +14,7 @@ class PowerUp {
 
     method serAgarradoPor(personaje) {
         personaje.agarrarPower(self)
-        game.say(personaje, "Powerup agarrado")
-        game.removeVisual(self)
+        
     }
 
     method generarPosInicial() {

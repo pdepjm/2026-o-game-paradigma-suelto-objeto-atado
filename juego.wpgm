@@ -25,9 +25,11 @@ object juego{
 
   method iniciarNivel(){
     //game.addVisual(nivelActual) ver como agregar bien el fondo
+    game.addVisual(nivelActual)
     
     game.onTick(nivelActual.tickAparicionEnemigos(), "crearEnemigos", {administracionEntidades.añadirEnemigo()})
     game.onTick(8000, "crearPowerUps", { administracionEntidades.añadirPowerUp() })
+    game.addVisualCharacter(personaje)
   }
 
   method terminarNivel(){
@@ -60,7 +62,7 @@ object juego{
   method iniciar() {
     //cada 5 segundos se crea un enemigo y despues cada un segundo busca al personaje
     //este tick los hacemos asi para que cuando llegue al tope de enemigos se pueda frenar
-    game.addVisualCharacter(personaje)
+    
     fueIniciado = true
     self.iniciarNivel()
     //game.onTick(tickAparicionEnemigos, "crearEnemigos", {self.añadirEnemigo()}) 
@@ -82,7 +84,6 @@ object juego{
 
   method perder() {
     administracionEntidades.eliminarTicks()
-    administracionEntidades.frenarTicks()
     
     game.clear()
     game.addVisual(gameOver)
@@ -129,6 +130,14 @@ program misaRicotera {
     }
   })
 
+  keyboard.r().onPressDo({
+    game.clear()
+    if(game.hasVisual(gameOver)) {
+      game.removeVisual(gameOver)
+      game.addVisual(pantallaInicial)
+    }
+  })
+
   keyboard.right().onPressDo({
       if(game.hasVisual(pantallaInicial)){
         pantallaInicial.avanzarPersonaje()
@@ -145,6 +154,11 @@ program misaRicotera {
 	keyboard.a().onPressDo({personaje.dispararBala("balaIzquierda.png", true,-1)})
 	keyboard.s().onPressDo({personaje.dispararBala("balaAbajo.png", false,-1)})
 	keyboard.d().onPressDo({personaje.dispararBala("balaDerecha.png", true, 1)})
+
+  keyboard.up().onPressDo({personaje.cambiarDireccion("Arriba")})
+  keyboard.down().onPressDo({personaje.cambiarDireccion("Derecha")})
+  keyboard.right().onPressDo({personaje.cambiarDireccion("Derecha")})
+  keyboard.left().onPressDo({personaje.cambiarDireccion("Izquierda")})
 
   
 
