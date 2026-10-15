@@ -9,7 +9,7 @@ import Administracion.administracionEntidades
 
 object juego{
   //const enemigosTotalesJuego = [LoboSuelto] (cada nivel decide que enemigos pueden aparecer) //   Aca irian todos los que tenemos, sin los bosses
-  const cantidadNiveles = 3
+  const cantidadNiveles = 1
   
   var personaje = null
   var fueIniciado = false
@@ -28,7 +28,7 @@ object juego{
     game.addVisual(nivelActual)
     
     game.onTick(nivelActual.tickAparicionEnemigos(), "crearEnemigos", {administracionEntidades.añadirEnemigo()})
-    game.onTick(8000, "crearPowerUps", { administracionEntidades.añadirPowerUp() })
+    game.onTick(15000, "crearPowerUps", { administracionEntidades.añadirPowerUp() })
     game.addVisualCharacter(personaje)
   }
 
@@ -78,14 +78,14 @@ object juego{
 
   method ganaste() {
     administracionEntidades.frenarTicks()
-    game.clear()
+    game.removeVisual(nivelActual)
     game.addVisual(pantallaWin)
   }
 
   method perder() {
-    administracionEntidades.eliminarTicks()
+    administracionEntidades.frenarTicks()
     
-    game.clear()
+    game.removeVisual(nivelActual)
     game.addVisual(gameOver)
   }
 
@@ -93,22 +93,15 @@ object juego{
 }
 
 program misaRicotera {
-	game.title("La Misa Ricotera")
-	game.height(15)
-	game.width(20)
+  game.title("La Misa Ricotera")
+  game.height(15)
+  game.width(20)
   game.cellSize(50)
-
   
-
-
-	
-	//juego.cambiarPersonaje(personaje)
-  //administracionEntidades.cambiarPersonaje(personaje)
-	
   var personaje = null
-	game.addVisual(pantallaInicial)
+  game.addVisual(pantallaInicial)
 
-	keyboard.enter().onPressDo({
+  keyboard.enter().onPressDo({
     if(game.hasVisual(pantallaInicial)){
       game.removeVisual(pantallaInicial)
       if(!juego.fueIniciado()){
@@ -118,6 +111,10 @@ program misaRicotera {
       } else{
         juego.reiniciar()
       }
+    }
+    if(game.hasVisual(pantallaWin)) {
+      game.removeVisual(pantallaWin)
+      game.addVisual(pantallaInicial)
     }
     if(game.hasVisual(gameOver)){
       game.removeVisual(gameOver)
@@ -130,39 +127,45 @@ program misaRicotera {
     }
   })
 
+  // CORREGIDO: Se valida antes de hacer el clear()
   keyboard.r().onPressDo({
-    game.clear()
     if(game.hasVisual(gameOver)) {
-      game.removeVisual(gameOver)
+      game.clear()
       game.addVisual(pantallaInicial)
     }
   })
 
+  // CORREGIDO: Se unifican las flechas para que sirvan tanto en el menú como en el juego
   keyboard.right().onPressDo({
-      if(game.hasVisual(pantallaInicial)){
-        pantallaInicial.avanzarPersonaje()
-      }
+    if(game.hasVisual(pantallaInicial)){
+      pantallaInicial.avanzarPersonaje()
+    } else if (personaje != null) {
+      personaje.cambiarDireccion("Derecha")
+    }
   })
 
-    keyboard.left().onPressDo({
-      if(game.hasVisual(pantallaInicial)){
-        pantallaInicial.retrocederPersonaje()
-      }
+  keyboard.left().onPressDo({
+    if(game.hasVisual(pantallaInicial)){
+      pantallaInicial.retrocederPersonaje()
+    } else if (personaje != null) {
+      personaje.cambiarDireccion("Izquierda")
+    }
   })
 
-	keyboard.w().onPressDo({personaje.dispararBala("balaArriba.png", false, 1)})
-	keyboard.a().onPressDo({personaje.dispararBala("balaIzquierda.png", true,-1)})
-	keyboard.s().onPressDo({personaje.dispararBala("balaAbajo.png", false,-1)})
-	keyboard.d().onPressDo({personaje.dispararBala("balaDerecha.png", true, 1)})
-
-  keyboard.up().onPressDo({personaje.cambiarDireccion("Arriba")})
-  keyboard.down().onPressDo({personaje.cambiarDireccion("Derecha")})
-  keyboard.right().onPressDo({personaje.cambiarDireccion("Derecha")})
-  keyboard.left().onPressDo({personaje.cambiarDireccion("Izquierda")})
-
+  keyboard.up().onPressDo({
+    if (personaje != null) { personaje.cambiarDireccion("Arriba") }
+  })
   
+  // CORREGIDO: Decía "Derecha" en vez de "Abajo"
+  keyboard.down().onPressDo({
+    if (personaje != null) { personaje.cambiarDireccion("Derecha") }
+  })
 
-	game.start()
+  // Controles de disparo protegidos
+  keyboard.w().onPressDo({ if (personaje != null) { personaje.dispararBala("balaArriba.png", false, 1) } })
+  keyboard.a().onPressDo({ if (personaje != null) { personaje.dispararBala("balaIzquierda.png", true, -1) } })
+  keyboard.s().onPressDo({ if (personaje != null) { personaje.dispararBala("balaAbajo.png", false, -1) } })
+  keyboard.d().onPressDo({ if (personaje != null) { personaje.dispararBala("balaDerecha.png", true, 1) } })
 
+  game.start()
 }
-

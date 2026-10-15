@@ -29,21 +29,18 @@ class Enemigo {
   }
 
 
-  method cambiarPosicion(x, y) {
+  method sumarAPosicionActual(x, y) {
     const xNueva = posicionActual.x() + x
     const yNueva = posicionActual.y() + y
 		posicionActual = game.at(xNueva,yNueva)
 	}
 
-  //ver que no funciona, se siguen fusionando
   method chocarConElEnemigo(enemigo) {
-    if(posicionActual.x() < game.width()) {
-      self.cambiarPosicion(posicionActual.x()+1, posicionActual.y()) 
-    }else if(posicionActual.y() < game.height()) {
-      self.cambiarPosicion(posicionActual.x(), posicionActual.y()+1) 
-    }
+    
+    self.generarPosInicial()
     //posible solucion a que dos enemigos se choquen
   }
+  
   method moverse(personaje)
   
   method agarrarPower(powerUp) {
@@ -56,14 +53,14 @@ class LoboSuelto inherits Enemigo(vida = 10, danio = 2,image = "loboSuelto.png")
 
   override method moverse(personaje) {
       if(self.position().x() > personaje.position().x()){
-        self.cambiarPosicion(-1,0)
+        self.sumarAPosicionActual(-1,0)
       }else if(self.position().x() < personaje.position().x()){
-        self.cambiarPosicion(1,0)
+        self.sumarAPosicionActual(1,0)
       }else{
         if(self.position().y() > personaje.position().y()){
-          self.cambiarPosicion(0,-1)
+          self.sumarAPosicionActual(0,-1)
         }else if(self.position().y() < personaje.position().y()){
-          self.cambiarPosicion(0,1)
+          self.sumarAPosicionActual(0,1)
         }
       }
    }
@@ -73,9 +70,9 @@ class BarbaAzul inherits Enemigo(vida = 7, danio = 3,image = "barbaAzul.png"){
   
   override method moverse(personaje) {
       if(self.position().x() > personaje.position().x()){
-        self.cambiarPosicion(-1,0)
+        self.sumarAPosicionActual(-1,0)
       }else if(self.position().x() < personaje.position().x()){
-        self.cambiarPosicion(1,0)
+        self.sumarAPosicionActual(1,0)
       }
   }
 }
@@ -83,14 +80,17 @@ class BarbaAzul inherits Enemigo(vida = 7, danio = 3,image = "barbaAzul.png"){
 class CorderoAtado inherits Enemigo(vida = 12, danio = 10,image = "corderoAtado.png"){
   //en caso de que lleguemos a hacer enemigos que disparen, este dispararia. Por ahora es un cactus
   override method moverse(personaje) {}//Queda asi porque no se mueve este enemigo
+  override method chocarConElEnemigo(enemigo) {
+    //no hace nada, porque no se mueve
+  }
 }
 
 class Luzbelito inherits Enemigo(vida = 7, danio = 3, image = "luzbelito.png"){
     override method moverse(personaje) {
       if(self.position().y() > personaje.position().y()){
-        self.cambiarPosicion(0,-1)
+        self.sumarAPosicionActual(0,-1)
       }else if(self.position().y() < personaje.position().y()){
-        self.cambiarPosicion(0,1)
+        self.sumarAPosicionActual(0,1)
       }
   }
 }

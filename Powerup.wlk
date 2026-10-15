@@ -7,14 +7,13 @@ class PowerUp {
 
     method image() = image
     
+    method vida() = 0
     // Métodos abstractos
-    method vida()
     method daño()
-    method tipo()
 
     method serAgarradoPor(personaje) {
         personaje.agarrarPower(self)
-        
+      //  game.removeVisual(self)
     }
 
     method generarPosInicial() {
@@ -26,13 +25,10 @@ class PowerUp {
 // PowerUps
 
 class PuaDeGuitarra inherits PowerUp(image = "pua.png") {
-    override method tipo() = "Arma"
-    override method vida() = 0
     override method daño() = 2
 }
 
 class Lentes inherits PowerUp(image = "lentes.png") {
-    override method tipo() = "Defensa"
     override method vida() = 3
     override method daño() = 1
 }

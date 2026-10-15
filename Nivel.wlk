@@ -6,7 +6,7 @@ class Nivel {
      const tickAparicionEnemigos
      const image
      const position = game.origin()
-     const enemigosPosibles = [{=> new LoboSuelto()}] //con esto al hacer apply() 
+     const enemigosPosibles = [{=> new LoboSuelto()}, {=> new CorderoAtado()}, {=> new BarbaAzul()}] //con esto al hacer apply() 
      //con el anyOne se crea una nueva instancia de enemigo
      method enemigosPosibles()= enemigosPosibles
      method tickAparicionEnemigos() = tickAparicionEnemigos

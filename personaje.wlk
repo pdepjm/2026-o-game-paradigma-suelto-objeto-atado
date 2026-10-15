@@ -26,8 +26,8 @@ class Personaje {
         armaEnMano.modificarDanio(dañoOtorgado)
     } 
     
-   method agarrarPower(powerUp) {
-        if (powerUpBoost.contains(powerUp.tipo())) {
+    method agarrarPower(powerUp) {
+        if (powerUpBoost.contains(powerUp)) {
             // Usa los multiplicadores que cada personaje define a su manera
             const vidaOtorgada = self.multiplicadorVidaBoost(powerUp.vida())
             const dañoOtorgado = self.multiplicadorDanioBoost(powerUp.daño())
@@ -79,7 +79,7 @@ class Personaje {
     
 }
 
-object indio inherits Personaje(vida = 10,nombrePersonaje = "indio", powerUpBoost = ["Defensa"], armaEnMano = new ArmaDeFuego(danio = 2, cantidadCasillasMovimiento = 1)) {
+object indio inherits Personaje(vida = 10,nombrePersonaje = "indio", powerUpBoost = [{=> new Lentes()}], armaEnMano = new ArmaDeFuego(danio = 2, cantidadCasillasMovimiento = 1)) {
     override method multiplicadorVidaBoost(vidaPower){
         return vidaPower * 7
     }
@@ -89,7 +89,7 @@ object indio inherits Personaje(vida = 10,nombrePersonaje = "indio", powerUpBoos
 }
 
 
-object skay inherits Personaje(vida = 8, nombrePersonaje="skay" , powerUpBoost = ["Arma"], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
+object skay inherits Personaje(vida = 8, nombrePersonaje="skay" , powerUpBoost = [{=> new PuaDeGuitarra()}], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
     
     //Hacer logica para los powerUps que los boostean
     override method multiplicadorVidaBoost(vidaPower){
@@ -101,7 +101,7 @@ object skay inherits Personaje(vida = 8, nombrePersonaje="skay" , powerUpBoost =
 
 }
 
-object semilla inherits Personaje(vida = 5,nombrePersonaje="semilla", powerUpBoost = ["Arma"], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
+object semilla inherits Personaje(vida = 5,nombrePersonaje="semilla", powerUpBoost = [], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
      override method multiplicadorVidaBoost(vidaPower){
         return vidaPower * 2
     }
@@ -110,7 +110,7 @@ object semilla inherits Personaje(vida = 5,nombrePersonaje="semilla", powerUpBoo
     }
 }
 
-object walter inherits Personaje(vida = 5, nombrePersonaje="walter", powerUpBoost = ["Arma"], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
+object walter inherits Personaje(vida = 5, nombrePersonaje="walter", powerUpBoost = [], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
      override method multiplicadorVidaBoost(vidaPower){
         return vidaPower * 2
     }
@@ -119,7 +119,7 @@ object walter inherits Personaje(vida = 5, nombrePersonaje="walter", powerUpBoos
     }
 }
 
-object sergio inherits Personaje(vida = 5, nombrePersonaje="sergio", powerUpBoost = ["Arma"], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
+object sergio inherits Personaje(vida = 5, nombrePersonaje="sergio", powerUpBoost = [], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
      override method multiplicadorVidaBoost(vidaPower){
         return vidaPower * 2
     }
