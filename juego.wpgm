@@ -8,15 +8,12 @@ import Powerup.*
 import Administracion.administracionEntidades
 
 object juego{
-  //const enemigosTotalesJuego = [LoboSuelto] (cada nivel decide que enemigos pueden aparecer) //   Aca irian todos los que tenemos, sin los bosses
-  const cantidadNiveles = 1
+  const cantidadNiveles = 3
   
   var personaje = null
   var fueIniciado = false
-  //var cantidadEnemigosRonda = 3 (lo deciden los niveles)
   
   var nivel = 1
-  //var tickAparicionEnemigos = 5000 (lo deciden los niveles)
 
   var nivelActual = new Nivel(cantidadEnemigosRonda=3, tickAparicionEnemigos= 5000, image = "fondoNivel1.png") 
 
@@ -46,7 +43,7 @@ object juego{
   }
 
   method arrancarNuevoNivel() {
-    const cantidadEnemigosRonda = 10 + (nivel * 4)
+    const cantidadEnemigosRonda = 3 + (nivel * 4)
     const tickAparicionEnemigos = 3000 - (nivel * 500)
     const fondo = "fondoNivel" + nivel + ".png"
     nivelActual= new Nivel(cantidadEnemigosRonda = cantidadEnemigosRonda, tickAparicionEnemigos = tickAparicionEnemigos, image = fondo)
@@ -60,13 +57,9 @@ object juego{
 
 
   method iniciar() {
-    //cada 5 segundos se crea un enemigo y despues cada un segundo busca al personaje
-    //este tick los hacemos asi para que cuando llegue al tope de enemigos se pueda frenar
-    
+
     fueIniciado = true
     self.iniciarNivel()
-    //game.onTick(tickAparicionEnemigos, "crearEnemigos", {self.añadirEnemigo()}) 
-
     administracionEntidades.iniciarTicks()
   }								
 
@@ -78,12 +71,22 @@ object juego{
 
   method ganaste() {
     administracionEntidades.frenarTicks()
+    administracionEntidades.reiniciarContador()
+    self.removerTicks()
     game.removeVisual(nivelActual)
     game.addVisual(pantallaWin)
   }
 
+  method removerTicks() {
+    game.removeTickEvent("crearEnemigos")
+    game.removeTickEvent("crearPowerUps")
+  }
+
   method perder() {
     administracionEntidades.frenarTicks()
+    administracionEntidades.reiniciarContador()
+    self.removerTicks()
+    game.removeVisual(personaje)
     
     game.removeVisual(nivelActual)
     game.addVisual(gameOver)
@@ -104,13 +107,9 @@ program misaRicotera {
   keyboard.enter().onPressDo({
     if(game.hasVisual(pantallaInicial)){
       game.removeVisual(pantallaInicial)
-      if(!juego.fueIniciado()){
-        personaje = pantallaInicial.obtenerPersonajeActual()
-        juego.cambiarPersonaje(personaje)
-        juego.iniciar()
-      } else{
-        juego.reiniciar()
-      }
+      personaje = pantallaInicial.obtenerPersonajeActual()
+      juego.cambiarPersonaje(personaje)
+      juego.iniciar()
     }
     if(game.hasVisual(pantallaWin)) {
       game.removeVisual(pantallaWin)
@@ -118,7 +117,7 @@ program misaRicotera {
     }
     if(game.hasVisual(gameOver)){
       game.removeVisual(gameOver)
-      game.addVisual(pantallaInicial)
+      juego.iniciar()
     }
     if(game.hasVisual(pantallaFinRonda)) {
       game.removeVisual(pantallaFinRonda)
@@ -127,15 +126,12 @@ program misaRicotera {
     }
   })
 
-  // CORREGIDO: Se valida antes de hacer el clear()
   keyboard.r().onPressDo({
     if(game.hasVisual(gameOver)) {
-      game.clear()
       game.addVisual(pantallaInicial)
     }
   })
 
-  // CORREGIDO: Se unifican las flechas para que sirvan tanto en el menú como en el juego
   keyboard.right().onPressDo({
     if(game.hasVisual(pantallaInicial)){
       pantallaInicial.avanzarPersonaje()
@@ -156,7 +152,6 @@ program misaRicotera {
     if (personaje != null) { personaje.cambiarDireccion("Arriba") }
   })
   
-  // CORREGIDO: Decía "Derecha" en vez de "Abajo"
   keyboard.down().onPressDo({
     if (personaje != null) { personaje.cambiarDireccion("Derecha") }
   })

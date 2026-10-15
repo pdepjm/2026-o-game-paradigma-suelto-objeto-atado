@@ -15,6 +15,11 @@ object administracionEntidades {
   method personaje() = juego.personaje()
   method nivelActual() = juego.nivelActual()
 
+
+  method reiniciarContador() {
+    cantidadEnemigosAñadidos = 0
+  }
+
   method moverEnemigos() {
     enemigos.forEach({enemigo => enemigo.moverse(self.personaje())})
   }
