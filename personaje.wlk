@@ -14,6 +14,7 @@ class Personaje {
 
     const powerUpBoost = [] 
     
+    method getPowerUpBoost() = powerUpBoost
     
     method vida() = vida
 

@@ -1,110 +1,89 @@
-import Enemigo.Enemigo
+import Enemigo.*
+import Powerup.*
 import Arma.*
 import personaje.*
 import juego.juego
+import Administracion.administracionEntidades
 
-// describe "tests para la clase Bala" {
+describe "tests de los personajes" {
+    test "el personaje pierde vida al chocar con un enemigo" {
+        const personaje = indio
+        const enemigo = new CorderoAtado()
+        
+        const vidaInicial = personaje.vida()
+        personaje.chocarConElEnemigo(enemigo)
+        
+        assert.equals(vidaInicial - enemigo.danio(), personaje.vida())
+    }
 
-//     test "una bala se crea con sus valores iniciales y los parametros requeridos" {
-//         // image, seMueveHorizontal y cantidadCasillasMovimiento no tienen valor por defecto, 
-//         // por lo que se deben proveer al instanciar.
-//         const bala = new ArmaDeFuego(image = "balaArriba.png", seMueveHorizontal = true, cantidadCasillasMovimiento = 2)
+    test "el personaje agarra un powerup y su vida aumenta según el multiplicador del personaje" {
+        const personaje = skay
+        const powerUp = new Lentes()
         
-//         assert.equals(1, bala.danio())
-//         assert.equals("balaArriba.png", bala.image())
-//         assert.equals(game.origin(), bala.position())
-//     }
+        const vidaInicial = personaje.vida()
+        personaje.agarrarPower(powerUp)
+        const lista = personaje.getPowerUpBoost()
+        if(lista.contains(powerUp)) {
+            // El multiplicador de vida para skay es 2, y la vida del powerup es 3
+            assert.equals(vidaInicial + (personaje.multiplicadorVidaBoost(powerUp.vida())), personaje.vida())
+        }else{
+            assert.equals(vidaInicial + powerUp.vida(), personaje.vida())
+        }
+    }
+}
 
-//     test "cambiarPosicion actualiza correctamente las coordenadas de la bala" {
-//         const bala = new ArmaDeFuego(image = "balaArriba.png", seMueveHorizontal = true, cantidadCasillasMovimiento = 1)
-        
-//         bala.cambiarPosicion(4, 5)
-        
-//         assert.equals(game.at(4, 5), bala.position())
-//     }
+describe "tests de los enemigos" {
 
-//     test "mover desplaza la posicion horizontalmente si seMueveHorizontal es verdadero" {
-//         const bala = new ArmaDeFuego(image = "balaArriba.png", seMueveHorizontal = true, cantidadCasillasMovimiento = 3)
-//         bala.cambiarPosicion(2, 2)
+    test "CorderoAtado no se mueve" {
+        const cordero = new CorderoAtado()
+        const personaje = indio
         
-//         bala.mover() // Debería sumar 3 a la coordenada x
-        
-//         assert.equals(game.at(5, 2), bala.position())
-//     }
+        cordero.generarPosInicial()
+        const posicionInicial = cordero.position()
 
-//     test "mover desplaza la posicion verticalmente si seMueveHorizontal es falso" {
-//         const bala = new ArmaDeFuego(image = "balaArriba.png", seMueveHorizontal = false, cantidadCasillasMovimiento = 4)
-//         bala.cambiarPosicion(2, 2)
-        
-//         bala.mover() // Debería sumar 4 a la coordenada y
-        
-//         assert.equals(game.at(2, 6), bala.position())
-//     }
+        cordero.moverse(personaje)
+        const posicionFinal = cordero.position()
 
-//     test "chocarConElEnemigo reduce la vida del enemigo usando el danio de la bala" {
-//         const bala = new ArmaDeFuego(image = "balaArriba.png", seMueveHorizontal = true, cantidadCasillasMovimiento = 1)
-        
-//         // Creamos un objeto simulado (mock) para el enemigo que entienda cambiarVida
-//         const enemigoMock = object {
-//             var property vida = 3
-//             method cambiarVida(cuanto) {
-//                 vida -= cuanto
-//             }
-//         }
-        
-//         bala.chocarConElEnemigo(enemigoMock)
-        
-//         // El daño de la bala por defecto es 1, por lo que 3 - 1 = 2
-//         assert.equals(2, enemigoMock.vida())
-//     }
-// }
+        assert.equals(posicionInicial, posicionFinal)
+    }
 
-// describe "tests para el personaje" {
+    test "El enemigo pierde vida" {
+        const enemigo = new LoboSuelto()
+        const vidaInicial = enemigo.vida()
 
-//     test "el personaje arranca con la vida inicial y su imagen por defecto" {
-//         assert.equals(5, personaje.vida())
-//         assert.equals("indio.png", personaje.image())
-//     }
+        enemigo.cambiarVida(3)
 
-//     test "modificar la vida de forma positiva aumenta la vida" {
-//         const vidaAntes = personaje.vida()
-//         personaje.modificarVida(2)
-        
-//         assert.equals(vidaAntes + 2, personaje.vida())
-        
-//         // Restauramos el estado
-//         personaje.modificarVida(-2)
-//     }
+        assert.equals(vidaInicial - 3, enemigo.vida())
+    }
+}
 
-//     test "chocar con un enemigo reduce la vida segun el daño del enemigo" {
-//         // Creamos un objeto anónimo que actúe como enemigo y responda a danio()
-//         const unEnemigo = new Enemigo()
+describe "tests para la administracion de entidades" {
+    test "al añadir un enemigo, la cantidad de enemigos añadidos aumenta" {
+        administracionEntidades.reiniciarContador()
+        const cantidadInicial = administracionEntidades.getCantidadEnemigos()
         
-//         const vidaAntes = personaje.vida()
-//         personaje.chocarConElEnemigo(unEnemigo)
+        administracionEntidades.añadirEnemigo()
         
-//         assert.equals(vidaAntes - 1, personaje.vida())
-        
-//         // Restauramos el estado
-//         personaje.modificarVida(2)
-//     }
-// }
+        assert.equals(cantidadInicial + 1, administracionEntidades.getCantidadEnemigos())
+    }
 
-// describe "tests para la clase Enemigo" {
-
-//     test "un enemigo se crea con su vida, daño e imagen iniciales" {
-//         const unEnemigo = new Enemigo()
+/*    
+    test "se mueven todos los enemigos cuando se llama a moverEnemigos" {
+        administracionEntidades.reiniciarContador()
         
-//         assert.equals(2, unEnemigo.vida())
-//         assert.equals(1, unEnemigo.danio())
-//         assert.equals("enemigo.png", unEnemigo.image())
-//     }
-
-//     test "cambiarVida reduce la vida del enemigo según el valor pasado" {
-//         const unEnemigo = new Enemigo()
+        // Asegurate de que el test tenga un nivel y contexto mockeado si es necesario, 
+        // o que getEnemigos() tenga elementos válidos para probar el movimiento.
+        administracionEntidades.añadirEnemigo()
+        administracionEntidades.añadirEnemigo()
         
-//         unEnemigo.cambiarVida(1)
+        const posicionesIniciales = administracionEntidades.getEnemigos().map({enemigo => enemigo.position()})
         
-//         assert.equals(1, unEnemigo.vida())
-//     }
-// }
+        administracionEntidades.moverEnemigos()
+        
+        const posicionesFinales = administracionEntidades.getEnemigos().map({enemigo => enemigo.position()})
+        
+        // Verificamos el comportamiento esperado del movimiento
+        assert.notEquals(posicionesIniciales, posicionesFinales)
+    }
+*/
+}

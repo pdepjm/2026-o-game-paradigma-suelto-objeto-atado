@@ -15,7 +15,10 @@ object administracionEntidades {
   method personaje() = juego.personaje()
   method nivelActual() = juego.nivelActual()
 
-
+  //Metodos para los tests
+  method getCantidadEnemigos() = enemigos.size()
+  method getEnemigos() = enemigos
+  
   method reiniciarContador() {
     cantidadEnemigosAñadidos = 0
   }
