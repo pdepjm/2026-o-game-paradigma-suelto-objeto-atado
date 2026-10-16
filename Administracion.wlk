@@ -93,4 +93,10 @@ object administracionEntidades {
     
   }
 
+  method reiniciar() {
+    enemigos.clear()
+    cantidadEnemigosDerrotados = 0
+    cantidadEnemigosAñadidos = 0
+  }
+
 }

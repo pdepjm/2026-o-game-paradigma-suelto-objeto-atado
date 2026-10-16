@@ -64,8 +64,19 @@ object juego{
   }								
 
   method reiniciar() {
-
-  }				
+    nivel = 1
+    nivelActual = new Nivel(cantidadEnemigosRonda=3, tickAparicionEnemigos= 5000, image = "fondoNivel1.png")    
+    
+    // 1. Limpiamos las entidades y contadores
+    administracionEntidades.reiniciar()
+    
+    // 2. Reseteamos la vida y posición del personaje
+    personaje.reiniciar() 
+    
+    // 3. Iniciamos el nivel y los ticks de nuevo
+    self.iniciarNivel()
+    administracionEntidades.iniciarTicks()
+  }
 
   method fueIniciado() = fueIniciado
 
@@ -117,7 +128,7 @@ program misaRicotera {
     }
     if(game.hasVisual(gameOver)){
       game.removeVisual(gameOver)
-      juego.iniciar()
+      juego.reiniciar()
     }
     if(game.hasVisual(pantallaFinRonda)) {
       game.removeVisual(pantallaFinRonda)
@@ -128,6 +139,7 @@ program misaRicotera {
 
   keyboard.r().onPressDo({
     if(game.hasVisual(gameOver)) {
+      game.removeVisual(gameOver)
       game.addVisual(pantallaInicial)
     }
   })

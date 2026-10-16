@@ -4,7 +4,8 @@ import Powerup.*
 
 
 class Personaje {
-    var vida = 5
+    var vida = vidaInicial
+    var vidaInicial
     const posicionInicial = game.center()
     const nombrePersonaje
     var direccion = "Derecha"
@@ -15,7 +16,7 @@ class Personaje {
     const powerUpBoost = [] 
     
     method getPowerUpBoost() = powerUpBoost
-    
+
     method vida() = vida
 
     method image() = nombrePersonaje + direccion + ".png"
@@ -77,10 +78,13 @@ class Personaje {
 	game.addVisual(bala)
 	balas.add(bala)
   }
-    
+    method reiniciar() {
+    vida = vidaInicial // o el valor de vida inicial que uses
+    position = posicionInicial // la posición inicial donde arranca en el tablero
+  }
 }
 
-object indio inherits Personaje(vida = 10,nombrePersonaje = "indio", powerUpBoost = [{=> new Lentes()}], armaEnMano = new ArmaDeFuego(danio = 2, cantidadCasillasMovimiento = 1)) {
+object indio inherits Personaje(vidaInicial = 10,nombrePersonaje = "indio", powerUpBoost = [{=> new Lentes()}], armaEnMano = new ArmaDeFuego(danio = 2, cantidadCasillasMovimiento = 1)) {
     override method multiplicadorVidaBoost(vidaPower){
         return vidaPower * 7
     }
@@ -90,7 +94,7 @@ object indio inherits Personaje(vida = 10,nombrePersonaje = "indio", powerUpBoos
 }
 
 
-object skay inherits Personaje(vida = 8, nombrePersonaje="skay" , powerUpBoost = [{=> new PuaDeGuitarra()}], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
+object skay inherits Personaje(vidaInicial = 8, nombrePersonaje="skay" , powerUpBoost = [{=> new PuaDeGuitarra()}], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
     
     //Hacer logica para los powerUps que los boostean
     override method multiplicadorVidaBoost(vidaPower){
@@ -102,7 +106,7 @@ object skay inherits Personaje(vida = 8, nombrePersonaje="skay" , powerUpBoost =
 
 }
 
-object semilla inherits Personaje(vida = 5,nombrePersonaje="semilla", powerUpBoost = [], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
+object semilla inherits Personaje(vidaInicial = 5,nombrePersonaje="semilla", powerUpBoost = [], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
      override method multiplicadorVidaBoost(vidaPower){
         return vidaPower * 2
     }
@@ -111,7 +115,7 @@ object semilla inherits Personaje(vida = 5,nombrePersonaje="semilla", powerUpBoo
     }
 }
 
-object walter inherits Personaje(vida = 5, nombrePersonaje="walter", powerUpBoost = [], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
+object walter inherits Personaje(vidaInicial = 5, nombrePersonaje="walter", powerUpBoost = [], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
      override method multiplicadorVidaBoost(vidaPower){
         return vidaPower * 2
     }
@@ -120,7 +124,7 @@ object walter inherits Personaje(vida = 5, nombrePersonaje="walter", powerUpBoos
     }
 }
 
-object sergio inherits Personaje(vida = 5, nombrePersonaje="sergio", powerUpBoost = [], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
+object sergio inherits Personaje(vidaInicial = 5, nombrePersonaje="sergio", powerUpBoost = [], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
      override method multiplicadorVidaBoost(vidaPower){
         return vidaPower * 2
     }
