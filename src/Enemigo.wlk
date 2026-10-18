@@ -74,8 +74,10 @@ class BarbaAzul inherits Enemigo(vida = 7, danio = 3,image = "barbaAzul.png"){
   
   override method moverse(personaje) {
       if(self.position().x() > personaje.position().x()){
+        image = "barbaAzulIzquierda.png"
         self.sumarAPosicionActual(-1,0)
       }else if(self.position().x() < personaje.position().x()){
+        image = "barbaAzul.png"
         self.sumarAPosicionActual(1,0)
       }
   }

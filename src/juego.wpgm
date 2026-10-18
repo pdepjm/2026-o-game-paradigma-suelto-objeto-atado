@@ -133,7 +133,7 @@ program misaRicotera {
       juego.arrancarNuevoNivel()
     }
   })
-
+  //en el fondo cuando perdes dice esc pero es r para volver al menu
   keyboard.r().onPressDo({
     if(game.hasVisual(gameOver)) {
       game.removeVisual(gameOver)
