@@ -28,6 +28,10 @@ class Enemigo {
       }
   }
 
+  //se utiliza solo en los test del movimiento de cada enemigo
+  method posicionActual(x,y) {
+    posicionActual = game.at(x,y)
+  }
 
   method sumarAPosicionActual(x, y) {
     const xNueva = posicionActual.x() + x
@@ -85,7 +89,7 @@ class CorderoAtado inherits Enemigo(vida = 12, danio = 10,image = "corderoAtado.
   }
 }
 
-class Luzbelito inherits Enemigo(vida = 7, danio = 3, image = "luzbelito.png"){
+class LuzBelito inherits Enemigo(vida = 7, danio = 3, image = "luzbelito.png"){
     override method moverse(personaje) {
       if(self.position().y() > personaje.position().y()){
         self.sumarAPosicionActual(0,-1)

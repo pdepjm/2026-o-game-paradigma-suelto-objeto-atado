@@ -10,15 +10,12 @@ import Administracion.administracionEntidades
 object juego{
   const cantidadNiveles = 3
   
-  var personaje = null
+  var property personaje = null
   var fueIniciado = false
   
   var nivel = 1
 
-  var nivelActual = new Nivel(cantidadEnemigosRonda=3, tickAparicionEnemigos= 5000, image = "fondoNivel1.png") 
-
-  method personaje() = personaje
-  method nivelActual() = nivelActual  
+  var property nivelActual = new Nivel(cantidadEnemigosRonda=3, tickAparicionEnemigos= 5000, image = "fondoNivel1.png") 
 
   method iniciarNivel(){
     //game.addVisual(nivelActual) ver como agregar bien el fondo

@@ -16,8 +16,9 @@ object administracionEntidades {
   method nivelActual() = juego.nivelActual()
 
   //Metodos para los tests
+  method cantidadEnemigosAñadidos() = cantidadEnemigosAñadidos
   method getCantidadEnemigos() = enemigos.size()
-  method getEnemigos() = enemigos
+  method enemigos() = enemigos
   
   method reiniciarContador() {
     cantidadEnemigosAñadidos = 0
@@ -30,13 +31,12 @@ object administracionEntidades {
   method añadirEnemigo() {
 	  if(cantidadEnemigosAñadidos < self.nivelActual().cantidadEnemigosRonda()) { 
 		
-    //ver si funciona que una lista = [new LoboSuelto()] devuelve una nueva instancia cada vez que se hace un get
+      // se crea una instancia del enemigo aleatorio de la lista de posibles enemigos
       const nuevoEnemigo = self.nivelActual().enemigosPosibles().anyOne().apply()
       nuevoEnemigo.generarPosInicial()
       enemigos.add(nuevoEnemigo)
       game.addVisual(nuevoEnemigo)
 
-      //REVISAR ESTA LINEA. al cruzarse entre enemigos, se hacen daño mutuamente. 
       game.onCollideDo(nuevoEnemigo, {objeto => objeto.chocarConElEnemigo(nuevoEnemigo)})
       cantidadEnemigosAñadidos+=1
 

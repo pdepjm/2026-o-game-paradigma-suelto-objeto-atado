@@ -4,11 +4,22 @@ import Arma.*
 import personaje.*
 import juego.juego
 import Administracion.administracionEntidades
+import Nivel.*
+
+class EnemigoTest {
+    var movimientos = 0
+    
+    method moverse(personaje) {
+        movimientos += 1
+    }
+
+    method movimientos() = movimientos
+}
 
 describe "tests de los personajes" {
     test "el personaje pierde vida al chocar con un enemigo" {
         const personaje = indio
-        const enemigo = new CorderoAtado()
+        const enemigo = new LoboSuelto()
         
         const vidaInicial = personaje.vida()
         personaje.chocarConElEnemigo(enemigo)
@@ -16,6 +27,19 @@ describe "tests de los personajes" {
         assert.equals(vidaInicial - enemigo.danio(), personaje.vida())
     }
 
+    test "el personaje agarra un powerUp estandar" {
+        const vidaInicial = skay.vida()
+        skay.agarrarPower(new Lentes())
+        assert.equals(vidaInicial + 3, skay.vida())
+    }
+
+    test "el personaje agarra un powerUp benefisioso" {
+        const vidaInicial = indio.vida()
+        indio.agarrarPower(new Lentes())
+        assert.equals(vidaInicial + 21, indio.vida() )
+    }
+
+/*
     test "el personaje agarra un powerup y su vida aumenta según el multiplicador del personaje" {
         const personaje = skay
         const powerUp = new Lentes()
@@ -30,22 +54,94 @@ describe "tests de los personajes" {
             assert.equals(vidaInicial + powerUp.vida(), personaje.vida())
         }
     }
+*/
 }
 
 describe "tests de los enemigos" {
+    const lobo = new LoboSuelto()
+    const barba = new BarbaAzul()
+    const luz = new LuzBelito()
+    method initialize() {
+        indio.position(game.at(5, 5))
+    }
 
     test "CorderoAtado no se mueve" {
         const cordero = new CorderoAtado()
-        const personaje = indio
-        
-        cordero.generarPosInicial()
-        const posicionInicial = cordero.position()
-
-        cordero.moverse(personaje)
+        indio.position(game.at(8, 8))
+        cordero.posicionActual(5,5)
+        cordero.moverse(indio)
         const posicionFinal = cordero.position()
 
-        assert.equals(posicionInicial, posicionFinal)
+        assert.equals(game.at(5,5), posicionFinal)
     }
+
+    test "LoboSuelto prioriza su movimiento al eje x y se mueve hacia el personaje en el eje x, hacia izquierda" {
+        lobo.posicionActual(6,3) // Posición inicial del lobo
+        lobo.moverse(indio)
+        //alcanza al personaje en el eje x
+        assert.equals(game.at(5,3), lobo.position())
+    }
+
+    test "LoboSuelto se mueve hacia el personaje en el eje x, hacia derecha" {
+        lobo.posicionActual(4,3) // Posición inicial del lobo
+        lobo.moverse(indio)
+        //alcanza al personaje en el eje x
+        assert.equals(game.at(5,3), lobo.position())
+    }
+
+    test "LoboSuelto se mueve hacia el personaje en el eje y, hacia arriba" {
+        lobo.posicionActual(5,3) 
+        lobo.moverse(indio)
+        //comienza a moverse en el eje y
+        assert.equals(game.at(5,4),lobo.position())
+    }
+
+    test "LoboSuelto se mueve hacia el personaje en el eje y, hacia abajo" {
+        lobo.posicionActual(5,7) 
+        lobo.moverse(indio)
+        //comienza a moverse en el eje y
+        assert.equals(game.at(5,6),lobo.position())
+    }
+    
+    test "LoboSuelto no se mueve porque ya esta en la misma posicion que el personaje" {
+        lobo.posicionActual(5,5) 
+        lobo.moverse(indio)
+        const posicionFinal = lobo.position()
+        assert.equals(game.at(5,5),posicionFinal)
+    }
+
+    test "BarbaAzul se mueve hacia el personaje en el eje x, hacia izquierda" {
+        barba.posicionActual(6,3) 
+        barba.moverse(indio)
+        assert.equals(game.at(5,3), barba.position())
+    }
+    test "BarbaAzul se mueve hacia el personaje en el eje x, hacia derecha" {
+        barba.posicionActual(4,3) 
+        barba.moverse(indio)
+        assert.equals(game.at(5,3), barba.position())
+    }
+    test "BarbaAzul se queda quieto si se encuentra en el mismo x que el personaje" {
+        barba.posicionActual(5,3) 
+        barba.moverse(indio)
+        assert.equals(game.at(5,3), barba.position())
+    }
+
+    test "LuzBelito se mueve hacia el personaje en el eje y, hacia abajo" {
+        luz.posicionActual(3,7) 
+        luz.moverse(indio)
+        assert.equals(game.at(3,6), luz.position())
+    }
+    test "LuzBelito se mueve hacia el personaje en el eje y, hacia arriba" {
+        luz.posicionActual(3,3) 
+        luz.moverse(indio)
+        assert.equals(game.at(3,4), luz.position())
+    }
+    test "LuzBelito se queda quieto si esta en el mismo y que el personaje" {
+        luz.posicionActual(3,5) 
+        luz.moverse(indio)
+        assert.equals(game.at(3,5), luz.position())
+    }
+
 
     test "El enemigo pierde vida" {
         const enemigo = new LoboSuelto()
@@ -58,32 +154,49 @@ describe "tests de los enemigos" {
 }
 
 describe "tests para la administracion de entidades" {
-    test "al añadir un enemigo, la cantidad de enemigos añadidos aumenta" {
-        administracionEntidades.reiniciarContador()
-        const cantidadInicial = administracionEntidades.getCantidadEnemigos()
-        
+
+    test "añadirEnemigo agrega un enemigo a la lista" {
+        const enemigosAlInicio = administracionEntidades.getCantidadEnemigos()
         administracionEntidades.añadirEnemigo()
-        
-        assert.equals(cantidadInicial + 1, administracionEntidades.getCantidadEnemigos())
+        administracionEntidades.añadirEnemigo()
+
+        assert.equals(enemigosAlInicio + 2, administracionEntidades.getCantidadEnemigos())
+    }
+    
+    test "añadirEnemigo no agrega más enemigos de los permitidos por el nivel" {
+        juego.nivelActual(new Nivel(cantidadEnemigosRonda=1, tickAparicionEnemigos=5000, image="fondoNivel1.png"))
+        administracionEntidades.añadirEnemigo()
+        administracionEntidades.añadirEnemigo()   
+        //se llama 2 veces a añadirEnemigo, pero deberia añadirse solo 1
+        assert.equals(1, administracionEntidades.cantidadEnemigosAñadidos())
     }
 
-/*    
-    test "se mueven todos los enemigos cuando se llama a moverEnemigos" {
-        administracionEntidades.reiniciarContador()
-        
-        // Asegurate de que el test tenga un nivel y contexto mockeado si es necesario, 
-        // o que getEnemigos() tenga elementos válidos para probar el movimiento.
+    test "eliminarEnemigo elimina al enemigo de la lista, pero el contador de enemigos añadidos no se modifica" {
+        juego.nivelActual(new Nivel(cantidadEnemigosRonda=5, tickAparicionEnemigos=5000, image="fondoNivel1.png"))
         administracionEntidades.añadirEnemigo()
-        administracionEntidades.añadirEnemigo()
-        
-        const posicionesIniciales = administracionEntidades.getEnemigos().map({enemigo => enemigo.position()})
-        
-        administracionEntidades.moverEnemigos()
-        
-        const posicionesFinales = administracionEntidades.getEnemigos().map({enemigo => enemigo.position()})
-        
-        // Verificamos el comportamiento esperado del movimiento
-        assert.notEquals(posicionesIniciales, posicionesFinales)
+        administracionEntidades.añadirEnemigo()   
+
+        //tomo a un enemigo de la lista y lo elimino
+        const enemigo = administracionEntidades.enemigos().first()
+        administracionEntidades.eliminarEnemigo(enemigo)
+
+        assert.equals(1, administracionEntidades.getCantidadEnemigos())
+        assert.equals(2, administracionEntidades.cantidadEnemigosAñadidos())
+
     }
-*/
+
+    test "se mueven todos los enemigos cuando se llama a moverEnemigos" {
+        const enemigo1 = new EnemigoTest()
+        const enemigo2 = new EnemigoTest()
+        juego.personaje(indio)
+        administracionEntidades.enemigos().add(enemigo1)
+        administracionEntidades.enemigos().add(enemigo2)
+
+        administracionEntidades.moverEnemigos()
+
+        assert.equals(1, enemigo1.movimientos())
+        assert.equals(1, enemigo2.movimientos())
+    }
+
+
 }

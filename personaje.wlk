@@ -13,21 +13,58 @@ class Personaje {
     var armaEnMano
     var balas = []
 
+/*
     const powerUpBoost = [] 
     
     method getPowerUpBoost() = powerUpBoost
+*/
 
     method vida() = vida
 
     method image() = nombrePersonaje + direccion + ".png"
 
-    //funcion que si el powerUp que agarra es alguna de la lista de powerUps
-    //buenas le aplica un beneficio que tiene cada personaje
     method aplicarBeneficio(vidaOtorgada,dañoOtorgado) {
         self.modificarVida(vidaOtorgada)
         armaEnMano.modificarDanio(dañoOtorgado)
     } 
+
+    method agarrarPower(powerUp) {    
+        powerUp.otorgarA(self)
+        game.say(self,"powerUp agarrado")
+        game.removeVisual(powerUp)
+    /*
+        ---------------------------
+        hay un problema con la version anterior de agarrarPower. lo que pasaba es:
+        en la lista de powerups por personaje, se guardaban bloques de codigo. 
+        agarrarPower hacía powerUpBoost.contains(powerUp) para decidir si el power-up era "afín".
+
+        la lista guardaba bloques, no powerUps. contains comparaba un bloque contra una instancia de Lentes,
+        que son cosas de distinto tipo, por lo que siempre daba false.
+
+        y si la lista guardaba instancias, se comparaban distintas instancias, que se toman como distintos objetos,
+        terminando tambien en false.
+        ---------------------------
+        la nueva version funciona:
+        a la clase personaje, se le aplica de igual manera el efecto de cada powerUp (por cada powerUp: un recibirItem(item)), 
+        lo que cambia es en los personajes concretos, sobrescribiendo el metodo recibirItem(item), agregandole la mejora.
+
+        esta version hace que tengamos que agregar un recibirItem(item) por cada nuevo item, generando un leve acoplamiento
+        ya que tenemos que modificar personaje al agregar un item. 
+
+    */
     
+    }
+
+    method recibirLentes(lentes) {
+        self.aplicarBeneficio(lentes.vida(),lentes.daño())
+    }
+
+    method recibirPua(pua) {
+        self.aplicarBeneficio(pua.vida(), pua.daño())
+    }
+
+
+/*   
     method agarrarPower(powerUp) {
         if (powerUpBoost.contains(powerUp)) {
             // Usa los multiplicadores que cada personaje define a su manera
@@ -35,7 +72,7 @@ class Personaje {
             const dañoOtorgado = self.multiplicadorDanioBoost(powerUp.daño())
             self.aplicarBeneficio(vidaOtorgada, dañoOtorgado)
         } else {
-            // Si no está en su lista copada, recibe el beneficio normal
+            // Si no está en su lista powerUpBoost, recibe el beneficio normal
             self.aplicarBeneficio(powerUp.vida(), powerUp.daño())
         }
         //lo movi para que se borre solo si lo agarro un personaje
@@ -44,13 +81,15 @@ class Personaje {
         game.removeVisual(powerUp)
     }
 
-    method cambiarDireccion(nuevaDireccion) {
-        direccion = nuevaDireccion
-    }
     // Métodos por defecto (por si un personaje estándar no multiplica nada)
     method multiplicadorVidaBoost(vidaPower)
     method multiplicadorDanioBoost(danioPower)
-    
+*/   
+
+    method cambiarDireccion(nuevaDireccion) {
+        direccion = nuevaDireccion
+    }
+
     method modificarVida(valor) {
         vida += valor
         if(vida <= 0 ) {
@@ -84,18 +123,23 @@ class Personaje {
   }
 }
 
-object indio inherits Personaje(vidaInicial = 10,nombrePersonaje = "indio", powerUpBoost = [{=> new Lentes()}], armaEnMano = new ArmaDeFuego(danio = 2, cantidadCasillasMovimiento = 1)) {
+object indio inherits Personaje(vidaInicial = 10,nombrePersonaje = "indio", armaEnMano = new ArmaDeFuego(danio = 2, cantidadCasillasMovimiento = 1)) {
+/*
     override method multiplicadorVidaBoost(vidaPower){
         return vidaPower * 7
     }
     override method multiplicadorDanioBoost(danioPower){
         return danioPower * 8
     }
+*/
+    override method recibirLentes(lentes) {
+        self.aplicarBeneficio(lentes.vida() * 7, lentes.daño() * 8)
+    }
 }
 
 
-object skay inherits Personaje(vidaInicial = 8, nombrePersonaje="skay" , powerUpBoost = [{=> new PuaDeGuitarra()}], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
-    
+object skay inherits Personaje(vidaInicial = 8, nombrePersonaje="skay" , armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
+/*    
     //Hacer logica para los powerUps que los boostean
     override method multiplicadorVidaBoost(vidaPower){
         return vidaPower * 2
@@ -103,11 +147,27 @@ object skay inherits Personaje(vidaInicial = 8, nombrePersonaje="skay" , powerUp
     override method multiplicadorDanioBoost(danioPower){
         return danioPower * 2
     }
+*/
+    override method recibirPua(pua) {
+        self.aplicarBeneficio(pua.vida() * 2, pua.daño() * 2)
+    }
 
 }
 
+object semilla inherits Personaje(vidaInicial = 5,nombrePersonaje="semilla",armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
+    
+}
+
+object walter inherits Personaje(vidaInicial = 5, nombrePersonaje="walter",armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
+    
+}
+
+object sergio inherits Personaje(vidaInicial = 5, nombrePersonaje="sergio",armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
+    
+}
+/*
 object semilla inherits Personaje(vidaInicial = 5,nombrePersonaje="semilla", powerUpBoost = [], armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
-     override method multiplicadorVidaBoost(vidaPower){
+    override method multiplicadorVidaBoost(vidaPower){
         return vidaPower * 2
     }
     override method multiplicadorDanioBoost(danioPower){
@@ -132,3 +192,4 @@ object sergio inherits Personaje(vidaInicial = 5, nombrePersonaje="sergio", powe
         return danioPower * 2
     }
 }
+*/
