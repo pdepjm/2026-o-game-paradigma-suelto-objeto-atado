@@ -2,6 +2,19 @@ import Enemigo.*
 import wollok.game.*
 
 class Nivel {
+     var nivelAnterior
+     var nivelSiguiente
+     
+     method nivelAnterior() = nivelAnterior
+     method nivelSiguiente() = nivelSiguiente
+
+     method nivelAnterior(nuevoNivelAnterior) {
+         nivelAnterior = nuevoNivelAnterior
+     }
+
+     method nivelSiguiente(nuevoNivelSiguiente) {
+         nivelSiguiente = nuevoNivelSiguiente
+     }
      const cantidadEnemigosRonda
      const tickAparicionEnemigos
      const image

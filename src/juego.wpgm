@@ -40,11 +40,17 @@ object juego{
   }
 
   method arrancarNuevoNivel() {
+    const nivelAnterior = nivelActual
+
     const cantidadEnemigosRonda = 3 + (nivel * 4)
     const tickAparicionEnemigos = 3000 - (nivel * 500)
     const fondo = "fondoNivel" + nivel + ".png"
-    nivelActual= new Nivel(cantidadEnemigosRonda = cantidadEnemigosRonda, tickAparicionEnemigos = tickAparicionEnemigos, image = fondo)
-      
+    
+    const nuevoNivel = new Nivel(cantidadEnemigosRonda = cantidadEnemigosRonda, tickAparicionEnemigos = tickAparicionEnemigos, image = fondo)
+   
+    nivelAnterior.nivelSiguiente(nuevoNivel)
+    nuevoNivel.nivelAnterior(nivelAnterior)
+    nivelActual = nuevoNivel
     self.iniciarNivel()
   }
 
