@@ -10,7 +10,7 @@ import Administracion.administracionEntidades
 object juego{
   const cantidadNiveles = 3
   
-  var property personaje = null
+  var property personaje = personajeNulo
   var fueIniciado = false
   
   var nivel = 1
@@ -115,7 +115,9 @@ program misaRicotera {
   game.width(20)
   game.cellSize(50)
   
-  var personaje = null
+  var personaje = personajeNulo
+  var property pantalla = pantallaInicial
+  var fueIniciado = false
   game.addVisual(pantallaInicial)
 
   keyboard.enter().onPressDo({

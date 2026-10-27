@@ -122,3 +122,7 @@ object walter inherits Personaje(vidaInicial = 5, nombrePersonaje="walter",armaE
 object sergio inherits Personaje(vidaInicial = 5, nombrePersonaje="sergio",armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
     
 }
+object personajeNulo {
+    method cambiarDirecccion(nuevadireccion){}
+    method dispararBala(imagen,esHorizontal,movimiento) {}
+}
