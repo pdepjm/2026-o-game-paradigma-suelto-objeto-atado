@@ -11,6 +11,7 @@ object juego{
   const cantidadNiveles = 3
   
   var property personaje = personajeNulo
+   var property pantalla = pantallaInicial
   var fueIniciado = false
   
   var nivel = 1
@@ -36,6 +37,7 @@ object juego{
       nivel += 1
       game.removeVisual(personaje)
       game.addVisual(pantallaFinRonda)
+      pantalla = pantallaFinRonda
     }
   }
 
@@ -89,6 +91,7 @@ object juego{
     self.removerTicks()
     game.removeVisual(nivelActual)
     game.addVisual(pantallaWin)
+    pantalla = pantallaWin
   }
 
   method removerTicks() {
@@ -104,6 +107,7 @@ object juego{
     
     game.removeVisual(nivelActual)
     game.addVisual(gameOver)
+    pantalla = gameOver
   }
 
 
@@ -116,11 +120,36 @@ program misaRicotera {
   game.cellSize(50)
   
   var personaje = personajeNulo
-  var property pantalla = pantallaInicial
-  var fueIniciado = false
   game.addVisual(pantallaInicial)
 
-  keyboard.enter().onPressDo({
+  method apretarW(unJuego){
+    personaje.dispararBala("balaArriba.png", false, 1)
+  }
+  
+  method apretarA(unJuego){
+    personaje.dispararBala("balaIzquierda.png", false, -1)
+  }
+  
+  method apretarS(unJuego){
+    personaje.dispararBala("balaAbajo.png", false, -1)
+  }
+
+  method apretarD(unJuego){
+    personaje.dispararBala("balaDerecha", false, 1)
+  }
+
+  keyboard.enter().onPressDo({juego.pantalla().apretarEnter(juego)})
+  keyboard.r().onPressDo({juego.pantalla().apretarR(juego)})
+  keyboard.right().onPressDo({juego.pantalla().apretarDerecha(juego)})
+  keyboard.left().onPressDo({juego.pantalla().apretarIzquierda(juego)})
+  keyboard.up().onPressDo({juego.pantalla().apretarArriba(juego)})
+  keyboard.down().onPressDo({juego.pantalla().apretarAbajo(juego)})
+  keyboard.w().onPressDo({juego.pantalla().apretarW(juego)})
+  keyboard.a().onPressDo({juego.pantalla().apretarA(juego)})
+  keyboard.s().onPressDo({juego.pantalla().apretarS(juego)})
+  keyboard.d().onPressDo({juego.pantalla().apretarD(juego)})
+
+  /*keyboard.enter().onPressDo({
     if(game.hasVisual(pantallaInicial)){
       game.removeVisual(pantallaInicial)
       personaje = pantallaInicial.obtenerPersonajeActual()
@@ -171,13 +200,13 @@ program misaRicotera {
   
   keyboard.down().onPressDo({
     if (personaje != null) { personaje.cambiarDireccion("Derecha") }
-  })
+  })*/
 
   // Controles de disparo protegidos
-  keyboard.w().onPressDo({ if (personaje != null) { personaje.dispararBala("balaArriba.png", false, 1) } })
-  keyboard.a().onPressDo({ if (personaje != null) { personaje.dispararBala("balaIzquierda.png", true, -1) } })
-  keyboard.s().onPressDo({ if (personaje != null) { personaje.dispararBala("balaAbajo.png", false, -1) } })
-  keyboard.d().onPressDo({ if (personaje != null) { personaje.dispararBala("balaDerecha.png", true, 1) } })
+  keyboard.w().onPressDo({ personaje.dispararBala("balaArriba.png", false, 1) })
+  keyboard.a().onPressDo({ personaje.dispararBala("balaIzquierda.png", true, -1) })
+  keyboard.s().onPressDo({ personaje.dispararBala("balaAbajo.png", false, -1) })
+  keyboard.d().onPressDo({ personaje.dispararBala("balaDerecha.png", true, 1) })
 
   game.start()
 }
