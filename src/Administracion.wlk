@@ -8,9 +8,9 @@ object administracionEntidades {
   var cantidadEnemigosAñadidos = 0
   
   //los enemigos se mueven cada 1 segundo
-  const tickMovimientoEnemigos = game.tick(1000, {self.moverEnemigos()}, false)
+  var tickMovimientoEnemigos = game.tick(1000, {self.moverEnemigos()}, false)
   //cada 100 milisegundos se mueven las balas disparadas por el personaje
-  const tickMovimientoBalas= game.tick(100, {self.moverBalas()}, false)
+  var tickMovimientoBalas= game.tick(100, {self.moverBalas()}, false)
 
   method personaje() = juego.personaje()
   method nivelActual() = juego.nivelActual()
@@ -22,6 +22,11 @@ object administracionEntidades {
   
   method reiniciarContador() {
     cantidadEnemigosAñadidos = 0
+  }
+
+  method settearTicks() {
+    tickMovimientoEnemigos = game.tick(1000, {self.moverEnemigos()}, false)
+    tickMovimientoBalas= game.tick(100, {self.moverBalas()}, false)
   }
 
   method moverEnemigos() {
@@ -78,13 +83,11 @@ object administracionEntidades {
     game.removeTickEvent("crearPowerUps")
   }
 
-  const powerUpsPosibles = [
-    { => new PuaDeGuitarra() }, 
-    { => new Lentes() }
-  ]
+  const powerUpsPosibles = ["pua","lentes"]
+  const instanciasPowerUpsPosibles = [{=> new PuaDeGuitarra()},{=> new Lentes()}]
 
   method añadirPowerUp() {
-    const nuevoPowerUp = powerUpsPosibles.anyOne().apply()
+    const nuevoPowerUp = instanciasPowerUpsPosibles.anyOne().apply()
       
     nuevoPowerUp.generarPosInicial()
     game.addVisual(nuevoPowerUp)

@@ -11,7 +11,7 @@ object juego{
   const cantidadNiveles = 3
   
   var property personaje = personajeNulo
-   var property pantalla = pantallaInicial
+  var property pantalla = pantallaInicial
   var fueIniciado = false
   
   var nivel = 1
@@ -25,6 +25,8 @@ object juego{
     game.onTick(nivelActual.tickAparicionEnemigos(), "crearEnemigos", {administracionEntidades.añadirEnemigo()})
     game.onTick(15000, "crearPowerUps", { administracionEntidades.añadirPowerUp() })
     game.addVisualCharacter(personaje)
+
+    administracionEntidades.iniciarTicks()
   }
 
   method terminarNivel(){
@@ -42,17 +44,16 @@ object juego{
   }
 
   method arrancarNuevoNivel() {
-    const nivelAnterior = nivelActual
-
+    // const nivelAnterior = nivelActual
     const cantidadEnemigosRonda = 3 + (nivel * 4)
     const tickAparicionEnemigos = 3000 - (nivel * 500)
     const fondo = "fondoNivel" + nivel + ".png"
     
-    const nuevoNivel = new Nivel(cantidadEnemigosRonda = cantidadEnemigosRonda, tickAparicionEnemigos = tickAparicionEnemigos, image = fondo)
-   
-    nivelAnterior.nivelSiguiente(nuevoNivel)
-    nuevoNivel.nivelAnterior(nivelAnterior)
-    nivelActual = nuevoNivel
+    nivelActual = new Nivel(cantidadEnemigosRonda = cantidadEnemigosRonda, tickAparicionEnemigos = tickAparicionEnemigos, image = fondo)
+
+    game.clear()
+
+    self.settearTeclas()
     self.iniciarNivel()
   }
 
@@ -64,23 +65,26 @@ object juego{
   method iniciar() {
 
     fueIniciado = true
+    nivelActual = new Nivel(cantidadEnemigosRonda=3, tickAparicionEnemigos= 5000, image = "fondoNivel1.png") 
+    administracionEntidades.settearTicks()
     self.iniciarNivel()
-    administracionEntidades.iniciarTicks()
+    //administracionEntidades.iniciarTicks()
   }								
 
-  method reiniciar() {
+
+  method reiniciarDesdeNivel1() {
     nivel = 1
     nivelActual = new Nivel(cantidadEnemigosRonda=3, tickAparicionEnemigos= 5000, image = "fondoNivel1.png")    
-    
+
     // 1. Limpiamos las entidades y contadores
     administracionEntidades.reiniciar()
-    
+    administracionEntidades.settearTicks()
     // 2. Reseteamos la vida y posición del personaje
     personaje.reiniciar() 
     
     // 3. Iniciamos el nivel y los ticks de nuevo
     self.iniciarNivel()
-    administracionEntidades.iniciarTicks()
+    //administracionEntidades.iniciarTicks()
   }
 
   method fueIniciado() = fueIniciado
@@ -89,8 +93,10 @@ object juego{
     administracionEntidades.frenarTicks()
     administracionEntidades.reiniciarContador()
     self.removerTicks()
-    game.removeVisual(nivelActual)
+    game.clear()
     game.addVisual(pantallaWin)
+    self.settearTeclas()
+    nivel = 1
     pantalla = pantallaWin
   }
 
@@ -103,13 +109,26 @@ object juego{
     administracionEntidades.frenarTicks()
     administracionEntidades.reiniciarContador()
     self.removerTicks()
-    game.removeVisual(personaje)
-    
-    game.removeVisual(nivelActual)
+    game.clear()
     game.addVisual(gameOver)
+    self.settearTeclas()
     pantalla = gameOver
   }
 
+  method settearTeclas() {
+    keyboard.enter().onPressDo({self.pantalla().apretarEnter() personaje = self.pantalla().obtenerPersonajeActual()})
+    keyboard.r().onPressDo({self.pantalla().apretarR()})
+    keyboard.right().onPressDo({self.pantalla().apretarDerecha()})
+    keyboard.left().onPressDo({self.pantalla().apretarIzquierda()})
+    keyboard.up().onPressDo({self.pantalla().apretarArriba()})
+    keyboard.down().onPressDo({self.pantalla().apretarAbajo()})
+  
+  // Controles de disparo protegidos
+    keyboard.w().onPressDo({ personaje.dispararBala("balaArriba.png", false, 1) })
+    keyboard.a().onPressDo({ personaje.dispararBala("balaIzquierda.png", true, -1) })
+    keyboard.s().onPressDo({ personaje.dispararBala("balaAbajo.png", false, -1) })
+    keyboard.d().onPressDo({ personaje.dispararBala("balaDerecha.png", true, 1) })
+  }
 
 }
 
@@ -122,91 +141,7 @@ program misaRicotera {
   var personaje = personajeNulo
   game.addVisual(pantallaInicial)
 
-  method apretarW(unJuego){
-    personaje.dispararBala("balaArriba.png", false, 1)
-  }
-  
-  method apretarA(unJuego){
-    personaje.dispararBala("balaIzquierda.png", false, -1)
-  }
-  
-  method apretarS(unJuego){
-    personaje.dispararBala("balaAbajo.png", false, -1)
-  }
-
-  method apretarD(unJuego){
-    personaje.dispararBala("balaDerecha", false, 1)
-  }
-
-  keyboard.enter().onPressDo({juego.pantalla().apretarEnter(juego)})
-  keyboard.r().onPressDo({juego.pantalla().apretarR(juego)})
-  keyboard.right().onPressDo({juego.pantalla().apretarDerecha(juego)})
-  keyboard.left().onPressDo({juego.pantalla().apretarIzquierda(juego)})
-  keyboard.up().onPressDo({juego.pantalla().apretarArriba(juego)})
-  keyboard.down().onPressDo({juego.pantalla().apretarAbajo(juego)})
-  keyboard.w().onPressDo({juego.pantalla().apretarW(juego)})
-  keyboard.a().onPressDo({juego.pantalla().apretarA(juego)})
-  keyboard.s().onPressDo({juego.pantalla().apretarS(juego)})
-  keyboard.d().onPressDo({juego.pantalla().apretarD(juego)})
-
-  /*keyboard.enter().onPressDo({
-    if(game.hasVisual(pantallaInicial)){
-      game.removeVisual(pantallaInicial)
-      personaje = pantallaInicial.obtenerPersonajeActual()
-      juego.cambiarPersonaje(personaje)
-      juego.iniciar()
-    }
-    if(game.hasVisual(pantallaWin)) {
-      game.removeVisual(pantallaWin)
-      game.addVisual(pantallaInicial)
-    }
-    if(game.hasVisual(gameOver)){
-      game.removeVisual(gameOver)
-      juego.reiniciar()
-    }
-    if(game.hasVisual(pantallaFinRonda)) {
-      game.removeVisual(pantallaFinRonda)
-      game.addVisualCharacter(personaje)
-      juego.arrancarNuevoNivel()
-    }
-  })
-  //en el fondo cuando perdes dice esc pero es r para volver al menu
-  keyboard.r().onPressDo({
-    if(game.hasVisual(gameOver)) {
-      game.removeVisual(gameOver)
-      game.addVisual(pantallaInicial)
-    }
-  })
-
-  keyboard.right().onPressDo({
-    if(game.hasVisual(pantallaInicial)){
-      pantallaInicial.avanzarPersonaje()
-    } else if (personaje != null) {
-      personaje.cambiarDireccion("Derecha")
-    }
-  })
-
-  keyboard.left().onPressDo({
-    if(game.hasVisual(pantallaInicial)){
-      pantallaInicial.retrocederPersonaje()
-    } else if (personaje != null) {
-      personaje.cambiarDireccion("Izquierda")
-    }
-  })
-
-  keyboard.up().onPressDo({
-    if (personaje != null) { personaje.cambiarDireccion("Arriba") }
-  })
-  
-  keyboard.down().onPressDo({
-    if (personaje != null) { personaje.cambiarDireccion("Derecha") }
-  })*/
-
-  // Controles de disparo protegidos
-  keyboard.w().onPressDo({ personaje.dispararBala("balaArriba.png", false, 1) })
-  keyboard.a().onPressDo({ personaje.dispararBala("balaIzquierda.png", true, -1) })
-  keyboard.s().onPressDo({ personaje.dispararBala("balaAbajo.png", false, -1) })
-  keyboard.d().onPressDo({ personaje.dispararBala("balaDerecha.png", true, 1) })
+  juego.settearTeclas()
 
   game.start()
 }

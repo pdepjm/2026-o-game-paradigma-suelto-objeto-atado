@@ -1,3 +1,4 @@
+import src.Administracion.*
 import juego.juego
 import Arma.*
 import Powerup.*
@@ -12,6 +13,8 @@ class Personaje {
     var property position = posicionInicial
     var armaEnMano
     var balas = []
+    const powerUpsConvenientes = []
+    const boostPowerUp
 
 
     method vida() = vida
@@ -24,39 +27,19 @@ class Personaje {
     } 
 
     method agarrarPower(powerUp) {    
-        powerUp.otorgarA(self)
+        const modificacionVida = powerUp.vida()
+        const modificacionDaño = powerUp.daño()
+        if(powerUpsConvenientes.contains(powerUp.tipo())) {
+            self.boostearPowerUp(modificacionVida, modificacionDaño)
+        }else {
+            self.aplicarBeneficio(modificacionVida,modificacionDaño)
+        }
         game.say(self,"powerUp agarrado")
         game.removeVisual(powerUp)
-    /*
-        ---------------------------
-        hay un problema con la version anterior de agarrarPower. lo que pasaba es:
-        en la lista de powerups por personaje, se guardaban bloques de codigo. 
-        agarrarPower hacía powerUpBoost.contains(powerUp) para decidir si el power-up era "afín".
+    }
 
-        la lista guardaba bloques, no powerUps. contains comparaba un bloque contra una instancia de Lentes,
-        que son cosas de distinto tipo, por lo que siempre daba false.
-
-        y si la lista guardaba instancias, se comparaban distintas instancias, que se toman como distintos objetos,
-        terminando tambien en false.
-        ---------------------------
-        la nueva version funciona:
-        a la clase personaje, se le aplica de igual manera el efecto de cada powerUp (por cada powerUp: un recibirItem(item)), 
-        lo que cambia es en los personajes concretos, sobrescribiendo el metodo recibirItem(item), agregandole la mejora.
-
-        esta version hace que tengamos que agregar un recibirItem(item) por cada nuevo item, generando un leve acoplamiento
-        ya que tenemos que modificar personaje al agregar un item. 
-
-    */
+    method boostearPowerUp(modificacionVida, modificacionDaño)
     
-    }
-
-    method recibirLentes(lentes) {
-        self.aplicarBeneficio(lentes.vida(),lentes.daño())
-    }
-
-    method recibirPua(pua) {
-        self.aplicarBeneficio(pua.vida(), pua.daño())
-    }  
 
     method cambiarDireccion(nuevaDireccion) {
         direccion = nuevaDireccion
@@ -95,34 +78,42 @@ class Personaje {
   }
 }
 
-object indio inherits Personaje(vidaInicial = 10,nombrePersonaje = "indio", armaEnMano = new ArmaDeFuego(danio = 2, cantidadCasillasMovimiento = 1)) {
-
-    override method recibirLentes(lentes) {
-        self.aplicarBeneficio(lentes.vida() * 7, lentes.daño() * 8)
-    }
-}
-
-
-object skay inherits Personaje(vidaInicial = 8, nombrePersonaje="skay" , armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
-
-    override method recibirPua(pua) {
-        self.aplicarBeneficio(pua.vida() * 2, pua.daño() * 2)
+object indio inherits Personaje(vidaInicial = 10,nombrePersonaje = "indio", armaEnMano = new ArmaDeFuego(danio = 2, cantidadCasillasMovimiento = 1), boostPowerUp = 2, powerUpsConvenientes = ["lentes"]) {
+    
+    
+    override method boostearPowerUp(modificacionVida, modificacionDaño) {
+        const aumento = [1,2,3,4,5].anyOne()
+        self.aplicarBeneficio(modificacionVida + aumento, modificacionDaño + aumento)
     }
 
 }
 
-object semilla inherits Personaje(vidaInicial = 5,nombrePersonaje="semilla",armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
-    
+
+object skay inherits Personaje(vidaInicial = 8, nombrePersonaje="skay" , armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1), boostPowerUp= 1, powerUpsConvenientes = ["pua"]) {
+    override method boostearPowerUp(modificacionVida, modificacionDaño) {
+        const enemigos = administracionEntidades.getCantidadEnemigos()
+        self.aplicarBeneficio(modificacionVida + (enemigos / 2).roundUp(), modificacionDaño + (enemigos / 2).roundUp())
+    }
 }
 
-object walter inherits Personaje(vidaInicial = 5, nombrePersonaje="walter",armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
-    
+object semilla inherits Personaje(vidaInicial = 5,nombrePersonaje="semilla",armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1), boostPowerUp = 2, powerUpsConvenientes = ["pua"]) {
+    override method boostearPowerUp(modificacionVida, modificacionDaño) {
+        
+    }
+}   
+
+object walter inherits Personaje(vidaInicial = 5, nombrePersonaje="walter",armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1), boostPowerUp= 3, powerUpsConvenientes = ["lentes", "pua"]) {
+    override method boostearPowerUp(modificacionVida, modificacionDaño) {
+        
+    }
 }
 
-object sergio inherits Personaje(vidaInicial = 5, nombrePersonaje="sergio",armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1)) {
-    
+object sergio inherits Personaje(vidaInicial = 5, nombrePersonaje="sergio",armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1), boostPowerUp = 5, powerUpsConvenientes = ["lentes"]) {
+    override method boostearPowerUp(modificacionVida, modificacionDaño) {
+        
+    }
 }
 object personajeNulo {
-    method cambiarDirecccion(nuevadireccion){}
+    method cambiarDireccion(nuevadireccion){}
     method dispararBala(imagen,esHorizontal,movimiento) {}
 }

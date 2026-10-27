@@ -1,18 +1,31 @@
 import wollok.game.*
 import personaje.*
-
-object pantallaInicial{
+import juego.juego
+class Pantalla{
     var property position = game.origin()
+
+    method image(){}
+
+    method apretarEnter(){}
+    method apretarR(){}
+    method apretarDerecha(){}
+    method apretarIzquierda(){}
+    method apretarArriba(){}
+    method apretarAbajo(){}
+    method obtenerPersonajeActual() {}
+}
+
+object pantallaInicial inherits Pantalla{
     var property spriteMenu = "pantallaInicial0.png"
-    method image() = spriteMenu
+    override method image() = spriteMenu
     const personajes = [indio, skay, semilla, sergio, walter]
     var property personajeSeleccionado = 0
 
-    method apretarEnter (unJuego){
+    override method apretarEnter (){
         game.removeVisual(self)
-        unJuego.cambiarPersonajeActual(self.obtenerPersonajeActual())
-        unJuego.pantalla(unJuego)
-        unJuego.iniciar()
+        juego.cambiarPersonaje(self.obtenerPersonajeActual())
+        juego.pantalla()
+        juego.iniciar()
     }
 
     method avanzarPersonaje() {
@@ -24,10 +37,9 @@ object pantallaInicial{
         spriteMenu = "pantallaInicial" + personajeSeleccionado + ".png"
 
     }
-
-    method apretarDerecha(unJuego){
+    override method apretarDerecha(){
         self.avanzarPersonaje()    
-        }
+    }
 
     method retrocederPersonaje() {
         personajeSeleccionado = personajeSeleccionado - 1
@@ -38,77 +50,45 @@ object pantallaInicial{
         spriteMenu = "pantallaInicial" + personajeSeleccionado + ".png"
     }
 
-    method apretarIzquierda(unJuego){
+    override method apretarIzquierda(){
         self.retrocederPersonaje()
     }
-    method apretarR(unJuego){}
-    method apretarArriba(unJuego){}
-    method apretarAbajo(unJuego){}
-    method apretarW(unJuego){}
-    method apretarA(unJuego){}
-    method apretarS(unJuego){}
-    method apretarD(unJuego){}
 
-    method obtenerPersonajeActual() = personajes.get(personajeSeleccionado)
+    override method obtenerPersonajeActual() = personajes.get(personajeSeleccionado)
 }
 
-object gameOver{
-    var property position = game.origin()
-    method image() = "pantallaPerdido.png"
-    method apretarEnter(unJuego) {
+object gameOver inherits Pantalla{
+    override method image() = "pantallaPerdido.png"
+    override method apretarEnter() {
         game.removeVisual(self)
-        unJuego.pantalla(unJuego)
-        unJuego.reiniciar()
+        juego.pantalla()
+        juego.reiniciarDesdeNivel1()
         }
-    method apretarR(unJuego) {
+
+    override method apretarR() {
         game.removeVisual(self)
         game.addVisual(pantallaInicial)
-        unJuego.pantalla(pantallaInicial)
+        juego.pantalla(pantallaInicial)
         }
-    method apretarDerecha(unJuego){}
-    method apretarIzquierda(unJuego){}
-    method apretarArriba(unJuego){}
-    method apretarAbajo(unJuego){}
-    method apretarW(unJuego){}
-    method apretarA(unJuego){}
-    method apretarS(unJuego){}
-    method apretarD(unJuego){}
+
+
 }
 
-object pantallaWin{
-    var property position = game.origin()
-    method image() = "pantallaVictoria.png"
-    method apretarEnter(unJuego) {
+object pantallaWin inherits Pantalla{
+    override method image() = "pantallaVictoria.png"
+    override method apretarEnter() {
         game.removeVisual(self)
         game.addVisual(pantallaInicial)
-        unJuego.pantalla(pantallaInicial)
-        }
-    method apretarR(unJuego){}
-    method apretarDerecha(unJuego){}
-    method apretarIzquierda(unJuego){}
-    method apretarArriba(unJuego){}
-    method apretarAbajo(unJuego){}
-    method apretarW(unJuego){}
-    method apretarA(unJuego){}
-    method apretarS(unJuego){}
-    method apretarD(unJuego){}
-}
-
-object pantallaFinRonda {
-    var property position = game.origin()
-    method image() = "pantallaFinRonda.png"
-    method apretarEnter(unJuego) {
-    game.removeVisual(self)
-    unJuego.pantalla(unJuego)
-    unJuego.arrancarNuevoNivel()
+        juego.pantalla(pantallaInicial)
     }
-    method apretarR(unJuego){}
-    method apretarDerecha(unJuego){}
-    method apretarIzquierda(unJuego){}
-    method apretarArriba(unJuego){}
-    method apretarAbajo(unJuego){}
-    method apretarW(unJuego){}
-    method apretarA(unJuego){}
-    method apretarS(unJuego){}
-    method apretarD(unJuego){}
+}
+
+object pantallaFinRonda inherits Pantalla{
+    override method image() = "pantallaFinRonda.png"
+   
+    override method apretarEnter() {
+    game.removeVisual(self)
+    juego.pantalla()
+    juego.arrancarNuevoNivel()
+    }
 }
