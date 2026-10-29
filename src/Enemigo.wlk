@@ -1,11 +1,13 @@
 import juego.*
 import Administracion.administracionEntidades
-
+import src.personaje.personajeNulo
+import juego.juego
 class Enemigo {
   var vida 
   var danio 
   var image 
   var posicionActual = 0
+  var jugador = personajeNulo
 
   method vida() = vida
   method danio() = danio
@@ -13,12 +15,18 @@ class Enemigo {
   method generarPosInicial(){
     posicionActual = game.at(1.randomUpTo(game.width()).roundDown(), 1.randomUpTo(game.height()).roundDown())//hacer override en los
     //enemigos que se muevan solo en los bordes en un lugar especifico
-    
+    if(posicionActual.x() == jugador.position().x() && posicionActual.y() == jugador.position().y()) {
+      posicionActual = game.at(posicionActual.x()+1,posicionActual.y()+1)
+    }
   }
 
   method position() = posicionActual
 
   method image() = image
+
+  method cambiarPersonaje(nuevoPersonaje) {
+    jugador = nuevoPersonaje
+  }
 
   method cambiarVida(vidaARestar) {
     vida -= vidaARestar
@@ -98,5 +106,53 @@ class LuzBelito inherits Enemigo(vida = 7, danio = 3, image = "luzbelito.png"){
       }else if(self.position().y() < personaje.position().y()){
         self.sumarAPosicionActual(0,1)
       }
+  }
+}
+
+object bossFinal inherits Enemigo(vida=30, danio=20, image = "bossFinal.png", posicionActual = game.center()){
+   override method moverse(personaje) {
+    const distanciaX = (self.position().x() - personaje.position().x()).abs()
+    
+    if (distanciaX > 1) {
+      // Si está a más de 1 cuadrado de distancia en X, se mueve 2 bloques hacia el personaje
+      if (self.position().x() > personaje.position().x()) {
+        self.sumarAPosicionActual(-2, 0)
+      } else {
+        self.sumarAPosicionActual(2, 0)
+      }
+    } else if (distanciaX == 1) {
+      // Si está a 1 cuadrado, se mueve exactamente 1 bloque para alcanzarlo
+      if (self.position().x() > personaje.position().x()) {
+        self.sumarAPosicionActual(-1, 0)
+      } else {
+        self.sumarAPosicionActual(1, 0)
+      }
+    } else {
+      // Si ya está alineado en X, hacemos lo mismo con el eje Y
+      const distanciaY = (self.position().y() - personaje.position().y()).abs()
+      
+      if (distanciaY > 1) {
+        if (self.position().y() > personaje.position().y()) {
+          self.sumarAPosicionActual(0, -2)
+        } else {
+          self.sumarAPosicionActual(0, 2)
+        }
+      } else if (distanciaY == 1) {
+        if (self.position().y() > personaje.position().y()) {
+          self.sumarAPosicionActual(0, -1)
+        } else {
+          self.sumarAPosicionActual(0, 1)
+        }
+      }
+    }
+  }
+
+  override method cambiarVida(vidaARestar) {
+    vida -= vidaARestar
+    if(vida <= 0) {
+      administracionEntidades.eliminarEnemigo(self)
+      game.removeVisual(self)
+      juego.ganaste()
+    }
   }
 }

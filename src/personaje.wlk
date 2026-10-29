@@ -5,8 +5,8 @@ import Powerup.*
 
 
 class Personaje {
-    var vida = vidaInicial
     var vidaInicial
+    var vida = vidaInicial
     const posicionInicial = game.center()
     const nombrePersonaje
     var direccion = "Derecha"
@@ -16,11 +16,10 @@ class Personaje {
     const powerUpsConvenientes = []
     const boostPowerUp
 
-
     method vida() = vida
 
     method image() = nombrePersonaje + direccion + ".png"
-
+    
     method aplicarBeneficio(vidaOtorgada,dañoOtorgado) {
         self.modificarVida(vidaOtorgada)
         armaEnMano.modificarDanio(dañoOtorgado)
@@ -51,11 +50,12 @@ class Personaje {
             game.say(self, "Perdi")
             juego.perder()
         }
+        vidaJugador.actualizarVida(vida)
     }
 
     method chocarConElEnemigo(enemigo) {
         self.modificarVida(-(enemigo.danio()))
-        game.say(self, "Dolor")
+        game.say(self, ("Dolor."))
     }
 
     method balas() = balas
@@ -98,19 +98,22 @@ object skay inherits Personaje(vidaInicial = 8, nombrePersonaje="skay" , armaEnM
 
 object semilla inherits Personaje(vidaInicial = 5,nombrePersonaje="semilla",armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1), boostPowerUp = 2, powerUpsConvenientes = ["pua"]) {
     override method boostearPowerUp(modificacionVida, modificacionDaño) {
-        
+        const bonusArte = juego.nivelActual().cantidadEnemigosRonda() * 0.5
+        self.aplicarBeneficio(modificacionVida + bonusArte, modificacionDaño + 1)
     }
 }   
 
 object walter inherits Personaje(vidaInicial = 5, nombrePersonaje="walter",armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1), boostPowerUp= 3, powerUpsConvenientes = ["lentes", "pua"]) {
     override method boostearPowerUp(modificacionVida, modificacionDaño) {
-        
+        const bonusRitmico = [1, 2].anyOne()
+        self.aplicarBeneficio(modificacionVida + bonusRitmico, modificacionDaño + bonusRitmico)
     }
 }
 
 object sergio inherits Personaje(vidaInicial = 5, nombrePersonaje="sergio",armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1), boostPowerUp = 5, powerUpsConvenientes = ["lentes"]) {
     override method boostearPowerUp(modificacionVida, modificacionDaño) {
-        
+        const bonusRitmico = [4,2,6,8].anyOne()
+        self.aplicarBeneficio(modificacionVida + bonusRitmico, modificacionDaño + bonusRitmico)
     }
 }
 object personajeNulo {

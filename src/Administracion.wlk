@@ -1,11 +1,14 @@
 import juego.juego
 import personaje.Personaje
+import Enemigo.*
 import Powerup.*
 
 object administracionEntidades {
   const enemigos = []
   var cantidadEnemigosDerrotados = 0
   var cantidadEnemigosAñadidos = 0
+  var cantidadPowerUpsAñadidos = 0
+  const cantidadPowerUpsRonda = 5
   
   //los enemigos se mueven cada 1 segundo
   var tickMovimientoEnemigos = game.tick(1000, {self.moverEnemigos()}, false)
@@ -33,11 +36,12 @@ object administracionEntidades {
     enemigos.forEach({enemigo => enemigo.moverse(self.personaje())})
   }
 
-  method añadirEnemigo() {
+  method añadirEnemigo(jugador) {
 	  if(cantidadEnemigosAñadidos < self.nivelActual().cantidadEnemigosRonda()) { 
 		
       // se crea una instancia del enemigo aleatorio de la lista de posibles enemigos
       const nuevoEnemigo = self.nivelActual().enemigosPosibles().anyOne().apply()
+      nuevoEnemigo.cambiarPersonaje(jugador)
       nuevoEnemigo.generarPosInicial()
       enemigos.add(nuevoEnemigo)
       game.addVisual(nuevoEnemigo)
@@ -48,6 +52,15 @@ object administracionEntidades {
 	  }else {
 		  game.removeTickEvent("crearEnemigos")
 	  }
+  }
+
+  method generarJefe() {
+    const jefe = bossFinal
+
+    enemigos.add(jefe)
+    game.addVisual(jefe)
+    game.onCollideDo(jefe, {objeto => objeto.chocarConElEnemigo(jefe)})
+    
   }
 
   method eliminarEnemigo(enemigo) {
@@ -87,12 +100,17 @@ object administracionEntidades {
   const instanciasPowerUpsPosibles = [{=> new PuaDeGuitarra()},{=> new Lentes()}]
 
   method añadirPowerUp() {
-    const nuevoPowerUp = instanciasPowerUpsPosibles.anyOne().apply()
-      
-    nuevoPowerUp.generarPosInicial()
-    game.addVisual(nuevoPowerUp)
-      
-    game.onCollideDo(nuevoPowerUp, { objeto => nuevoPowerUp.serAgarradoPor(objeto) })
+    if(cantidadPowerUpsAñadidos < cantidadPowerUpsRonda) {
+      const nuevoPowerUp = instanciasPowerUpsPosibles.anyOne().apply()
+        
+      nuevoPowerUp.generarPosInicial()
+      game.addVisual(nuevoPowerUp)
+        
+      game.onCollideDo(nuevoPowerUp, { objeto => nuevoPowerUp.serAgarradoPor(objeto) })
+      cantidadPowerUpsAñadidos+=1
+    }else{
+      game.removeTickEvent("crearPowerUps")
+    }
     
   }
 
@@ -102,4 +120,26 @@ object administracionEntidades {
     cantidadEnemigosAñadidos = 0
   }
 
+}
+
+object vidaJugador {
+  var vidaJugador = 0
+  method position() = game.origin()
+  method text() = "Vida: " + vidaJugador
+
+  method actualizarVida(nuevaVida) {
+    vidaJugador = nuevaVida
+  }
+}
+
+object textoNivelActual {
+  var nivel = 1
+
+  method position() = game.at(0,14)
+
+  method text() = "Nivel " + nivel + "/3"
+
+  method cambiarNivel(nuevoNivel) {
+    nivel = nuevoNivel
+  }
 }

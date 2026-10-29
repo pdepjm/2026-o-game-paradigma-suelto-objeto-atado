@@ -5,10 +5,10 @@ import Enemigo.*
 import Nivel.*
 import Pantalla.*
 import Powerup.*
-import Administracion.administracionEntidades
+import Administracion.*
 
 object juego{
-  const cantidadNiveles = 3
+  const cantidadNiveles = 1
   
   var property personaje = personajeNulo
   var property pantalla = pantallaInicial
@@ -20,9 +20,11 @@ object juego{
 
   method iniciarNivel(){
     //game.addVisual(nivelActual) ver como agregar bien el fondo
+    textoNivelActual.cambiarNivel(nivel)
     game.addVisual(nivelActual)
-    
-    game.onTick(nivelActual.tickAparicionEnemigos(), "crearEnemigos", {administracionEntidades.añadirEnemigo()})
+    game.addVisual(vidaJugador)
+    game.addVisual(textoNivelActual)
+    game.onTick(nivelActual.tickAparicionEnemigos(), "crearEnemigos", {administracionEntidades.añadirEnemigo(personaje)})
     game.onTick(15000, "crearPowerUps", { administracionEntidades.añadirPowerUp() })
     game.addVisualCharacter(personaje)
 
@@ -30,17 +32,19 @@ object juego{
   }
 
   method terminarNivel(){
-    administracionEntidades.eliminarTicks()
-    game.removeVisual(nivelActual)
     if(nivel == cantidadNiveles){
-      self.ganaste()
+      game.removeTickEvent("crearEnemigos")
+      administracionEntidades.generarJefe()
     }else{
-      
+      administracionEntidades.eliminarTicks()
+      game.removeVisual(nivelActual)
       nivel += 1
       game.removeVisual(personaje)
       game.addVisual(pantallaFinRonda)
       pantalla = pantallaFinRonda
     }
+    
+    
   }
 
   method arrancarNuevoNivel() {
@@ -65,6 +69,8 @@ object juego{
   method iniciar() {
 
     fueIniciado = true
+    vidaJugador.actualizarVida(personaje.vida())
+    
     nivelActual = new Nivel(cantidadEnemigosRonda=3, tickAparicionEnemigos= 5000, image = "fondoNivel1.png") 
     administracionEntidades.settearTicks()
     self.iniciarNivel()
@@ -118,10 +124,10 @@ object juego{
   method settearTeclas() {
     keyboard.enter().onPressDo({self.pantalla().apretarEnter() personaje = self.pantalla().obtenerPersonajeActual()})
     keyboard.r().onPressDo({self.pantalla().apretarR()})
-    keyboard.right().onPressDo({self.pantalla().apretarDerecha()})
-    keyboard.left().onPressDo({self.pantalla().apretarIzquierda()})
-    keyboard.up().onPressDo({self.pantalla().apretarArriba()})
-    keyboard.down().onPressDo({self.pantalla().apretarAbajo()})
+    keyboard.right().onPressDo({personaje.cambiarDireccion("Derecha")})
+    keyboard.left().onPressDo({personaje.cambiarDireccion("Izquierda")})
+    keyboard.up().onPressDo({personaje.cambiarDireccion("Arriba")})
+    keyboard.down().onPressDo({personaje.cambiarDireccion("Derecha")})
   
   // Controles de disparo protegidos
     keyboard.w().onPressDo({ personaje.dispararBala("balaArriba.png", false, 1) })

@@ -16,6 +16,10 @@ class EnemigoTest {
     method movimientos() = movimientos
 }
 
+object jugadorPrueba {
+    method position() = game.at(4,4)
+}
+
 describe "tests de los personajes" {
     test "el personaje pierde vida al chocar con un enemigo" {
         const personaje = indio
@@ -157,24 +161,24 @@ describe "tests para la administracion de entidades" {
 
     test "añadirEnemigo agrega un enemigo a la lista" {
         const enemigosAlInicio = administracionEntidades.getCantidadEnemigos()
-        administracionEntidades.añadirEnemigo()
-        administracionEntidades.añadirEnemigo()
+        administracionEntidades.añadirEnemigo(jugadorPrueba)
+        administracionEntidades.añadirEnemigo(jugadorPrueba)
 
         assert.equals(enemigosAlInicio + 2, administracionEntidades.getCantidadEnemigos())
     }
     
     test "añadirEnemigo no agrega más enemigos de los permitidos por el nivel" {
         juego.nivelActual(new Nivel(cantidadEnemigosRonda=1, tickAparicionEnemigos=5000, image="fondoNivel1.png"))
-        administracionEntidades.añadirEnemigo()
-        administracionEntidades.añadirEnemigo()   
+        administracionEntidades.añadirEnemigo(jugadorPrueba)
+        administracionEntidades.añadirEnemigo(jugadorPrueba)   
         //se llama 2 veces a añadirEnemigo, pero deberia añadirse solo 1
         assert.equals(1, administracionEntidades.cantidadEnemigosAñadidos())
     }
 
     test "eliminarEnemigo elimina al enemigo de la lista, pero el contador de enemigos añadidos no se modifica" {
         juego.nivelActual(new Nivel(cantidadEnemigosRonda=5, tickAparicionEnemigos=5000, image="fondoNivel1.png"))
-        administracionEntidades.añadirEnemigo()
-        administracionEntidades.añadirEnemigo()   
+        administracionEntidades.añadirEnemigo(jugadorPrueba)
+        administracionEntidades.añadirEnemigo(jugadorPrueba)   
 
         //tomo a un enemigo de la lista y lo elimino
         const enemigo = administracionEntidades.enemigos().first()

@@ -36,3 +36,14 @@ class Lentes inherits PowerUp(image = "lentes.png", tipo = "lentes") {
     override method daño() = 1
     
 }
+
+class Whisky inherits PowerUp(image = "whisky.png", tipo = "whisky") {
+    override method vida() = -2
+    override method daño() = 4
+    
+}
+class Palillos inherits PowerUp(image = "palillos.png", tipo = "whisky") {
+    override method vida() = -2
+    override method daño() = 4
+    
+}

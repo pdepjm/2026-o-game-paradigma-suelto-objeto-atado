@@ -6,7 +6,7 @@ class Nivel {
     const tickAparicionEnemigos
     const image
     const position = game.origin()
-    const enemigosPosibles = [{=> new LoboSuelto()}, {=> new CorderoAtado()}, {=> new BarbaAzul()}] //con esto al hacer apply() 
+    const enemigosPosibles = [{=> new LoboSuelto()}, {=> new CorderoAtado()}, {=> new BarbaAzul()}, {=> new LuzBelito()}] //con esto al hacer apply() 
     //var nivelAnterior
     //var nivelSiguiente
      

@@ -1,6 +1,7 @@
 import wollok.game.*
 import personaje.*
 import juego.juego
+
 class Pantalla{
     var property position = game.origin()
 
