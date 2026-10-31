@@ -8,7 +8,7 @@ import Powerup.*
 import Administracion.*
 
 object juego{
-  const cantidadNiveles = 1
+  const cantidadNiveles = 3
   
   var property personaje = personajeNulo
   var property pantalla = pantallaInicial
@@ -124,8 +124,8 @@ object juego{
   method settearTeclas() {
     keyboard.enter().onPressDo({self.pantalla().apretarEnter() personaje = self.pantalla().obtenerPersonajeActual()})
     keyboard.r().onPressDo({self.pantalla().apretarR()})
-    keyboard.right().onPressDo({personaje.cambiarDireccion("Derecha")})
-    keyboard.left().onPressDo({personaje.cambiarDireccion("Izquierda")})
+    keyboard.right().onPressDo({self.pantalla().apretarDerecha() personaje.cambiarDireccion("Derecha")})
+    keyboard.left().onPressDo({self.pantalla().apretarIzquierda() personaje.cambiarDireccion("Izquierda")})
     keyboard.up().onPressDo({personaje.cambiarDireccion("Arriba")})
     keyboard.down().onPressDo({personaje.cambiarDireccion("Derecha")})
   

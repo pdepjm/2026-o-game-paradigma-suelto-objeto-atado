@@ -8,9 +8,12 @@ class Enemigo {
   var image 
   var posicionActual = 0
   var jugador = personajeNulo
+  const vidaInicial = vida
 
   method vida() = vida
   method danio() = danio
+  method text() = "" + vida + "/" + vidaInicial
+  method textColor() = "009933FF"
 
   method generarPosInicial(){
     posicionActual = game.at(1.randomUpTo(game.width()).roundDown(), 1.randomUpTo(game.height()).roundDown())//hacer override en los
