@@ -42,8 +42,14 @@ class Whisky inherits PowerUp(image = "whisky.png", tipo = "whisky") {
     override method daño() = 4
     
 }
-class Palillos inherits PowerUp(image = "palillos.png", tipo = "whisky") {
-    override method vida() = -2
-    override method daño() = 4
+class Palillos inherits PowerUp(image = "palillos.png", tipo = "palillos") {
+    override method vida() = 0
+    override method daño() = 2
+    
+}
+
+class Saxo inherits PowerUp(image = "saxo.png", tipo = "saxo") {
+    override method vida() = 2
+    override method daño() = 1
     
 }

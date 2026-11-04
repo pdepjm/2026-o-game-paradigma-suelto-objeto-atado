@@ -78,7 +78,7 @@ class Personaje {
   }
 }
 
-object indio inherits Personaje(vidaInicial = 10,nombrePersonaje = "indio", armaEnMano = new ArmaDeFuego(danio = 2, cantidadCasillasMovimiento = 1), boostPowerUp = 2, powerUpsConvenientes = ["lentes"]) {
+object indio inherits Personaje(vidaInicial = 10,nombrePersonaje = "indio", armaEnMano = new ArmaDeFuego(danio = 2, cantidadCasillasMovimiento = 1), boostPowerUp = 2, powerUpsConvenientes = ["lentes","whisky"]) {
     
     
     override method boostearPowerUp(modificacionVida, modificacionDaño) {
@@ -89,28 +89,28 @@ object indio inherits Personaje(vidaInicial = 10,nombrePersonaje = "indio", arma
 }
 
 
-object skay inherits Personaje(vidaInicial = 8, nombrePersonaje="skay" , armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1), boostPowerUp= 1, powerUpsConvenientes = ["pua"]) {
+object skay inherits Personaje(vidaInicial = 8, nombrePersonaje="skay" , armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1), boostPowerUp= 1, powerUpsConvenientes = ["pua","whisky","saxo"]) {
     override method boostearPowerUp(modificacionVida, modificacionDaño) {
         const enemigos = administracionEntidades.getCantidadEnemigos()
         self.aplicarBeneficio(modificacionVida + (enemigos / 2).roundUp(), modificacionDaño + (enemigos / 2).roundUp())
     }
 }
 
-object semilla inherits Personaje(vidaInicial = 5,nombrePersonaje="semilla",armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1), boostPowerUp = 2, powerUpsConvenientes = ["pua"]) {
+object semilla inherits Personaje(vidaInicial = 5,nombrePersonaje="semilla",armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1), boostPowerUp = 2, powerUpsConvenientes = ["pua","whisky"]) {
     override method boostearPowerUp(modificacionVida, modificacionDaño) {
         const bonusArte = juego.nivelActual().cantidadEnemigosRonda() * 0.5
         self.aplicarBeneficio(modificacionVida + bonusArte, modificacionDaño + 1)
     }
 }   
 
-object walter inherits Personaje(vidaInicial = 5, nombrePersonaje="walter",armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1), boostPowerUp= 3, powerUpsConvenientes = ["lentes", "pua"]) {
+object walter inherits Personaje(vidaInicial = 6, nombrePersonaje="walter",armaEnMano = new ArmaDeFuego(danio = 6, cantidadCasillasMovimiento = 1), boostPowerUp= 3, powerUpsConvenientes = ["lentes", "pua","whisky","palillos"]) {
     override method boostearPowerUp(modificacionVida, modificacionDaño) {
         const bonusRitmico = [1, 2].anyOne()
         self.aplicarBeneficio(modificacionVida + bonusRitmico, modificacionDaño + bonusRitmico)
     }
 }
 
-object sergio inherits Personaje(vidaInicial = 5, nombrePersonaje="sergio",armaEnMano = new ArmaDeFuego(danio = 4, cantidadCasillasMovimiento = 1), boostPowerUp = 5, powerUpsConvenientes = ["lentes"]) {
+object sergio inherits Personaje(vidaInicial = 7, nombrePersonaje="sergio",armaEnMano = new ArmaDeFuego(danio = 2, cantidadCasillasMovimiento = 1), boostPowerUp = 5, powerUpsConvenientes = ["lentes","whisky","saxo"]) {
     override method boostearPowerUp(modificacionVida, modificacionDaño) {
         const bonusRitmico = [4,2,6,8].anyOne()
         self.aplicarBeneficio(modificacionVida + bonusRitmico, modificacionDaño + bonusRitmico)

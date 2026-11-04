@@ -5,7 +5,7 @@ import juego.juego
 class Pantalla{
     var property position = game.origin()
 
-    method image(){}
+    method image()
 
     method apretarEnter(){}
     method apretarR(){}
@@ -24,9 +24,8 @@ object pantallaInicial inherits Pantalla{
 
     override method apretarEnter (){
         game.removeVisual(self)
-        juego.cambiarPersonaje(self.obtenerPersonajeActual())
-        juego.pantalla()
-        juego.iniciar()
+        game.addVisual(pantallaControles)
+        juego.pantalla(pantallaControles)
     }
 
     method avanzarPersonaje() {
@@ -58,15 +57,24 @@ object pantallaInicial inherits Pantalla{
     override method obtenerPersonajeActual() = personajes.get(personajeSeleccionado)
 }
 
-object gameOver inherits Pantalla{
-    override method image() = "pantallaPerdido.png"
+object pantallaControles inherits Pantalla {
+    override method image() = "pantallaControles.png"
+
     override method apretarEnter() {
         game.removeVisual(self)
-        juego.pantalla()
+        juego.cambiarPersonaje(pantallaInicial.obtenerPersonajeActual())
+        juego.iniciar()
+        }
+}
+
+object gameOver inherits Pantalla{
+    override method image() = "pantallaPerdido.png"
+    override method apretarR() {
+        game.removeVisual(self)
         juego.reiniciarDesdeNivel1()
         }
 
-    override method apretarR() {
+    override method apretarEnter() {
         game.removeVisual(self)
         game.addVisual(pantallaInicial)
         juego.pantalla(pantallaInicial)
@@ -89,7 +97,6 @@ object pantallaFinRonda inherits Pantalla{
    
     override method apretarEnter() {
     game.removeVisual(self)
-    juego.pantalla()
     juego.arrancarNuevoNivel()
     }
 }
