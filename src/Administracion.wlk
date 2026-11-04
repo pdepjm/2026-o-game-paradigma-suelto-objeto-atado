@@ -97,7 +97,7 @@ object administracionEntidades {
   }
 
   const powerUpsPosibles = ["pua","lentes","whisky"]
-  const instanciasPowerUpsPosibles = [{=> new PuaDeGuitarra()},{=> new Lentes()} {=> new Whisky()}]
+  const instanciasPowerUpsPosibles = [{=> new PuaDeGuitarra()},{=> new Lentes()}, {=> new Whisky()}]
 
   method añadirPowerUp() {
     if(cantidadPowerUpsAñadidos < cantidadPowerUpsRonda) {
