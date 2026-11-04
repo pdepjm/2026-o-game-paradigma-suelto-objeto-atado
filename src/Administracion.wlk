@@ -96,8 +96,8 @@ object administracionEntidades {
     game.removeTickEvent("crearPowerUps")
   }
 
-  const powerUpsPosibles = ["pua","lentes","whisky","palillos","saxo"]
-  const instanciasPowerUpsPosibles = [{=> new Palillos()},{=> new Saxo()},{=> new Whisky()}]
+  //const powerUpsPosibles = ["pua","lentes"]
+  const instanciasPowerUpsPosibles = [{=> new PuaDeGuitarra()},{=> new Lentes()},{=> new Saxo()},{=> new Palillos()},{=> new Whisky()}]
 
   method añadirPowerUp() {
     if(cantidadPowerUpsAñadidos < cantidadPowerUpsRonda) {

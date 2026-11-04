@@ -25,7 +25,7 @@ object juego{
     game.addVisual(vidaJugador)
     game.addVisual(textoNivelActual)
     game.onTick(nivelActual.tickAparicionEnemigos(), "crearEnemigos", {administracionEntidades.añadirEnemigo(personaje)})
-    game.onTick(15000, "crearPowerUps", { administracionEntidades.añadirPowerUp() })
+    game.onTick(7500, "crearPowerUps", { administracionEntidades.añadirPowerUp() })
     game.addVisualCharacter(personaje)
 
     administracionEntidades.iniciarTicks()
