@@ -112,7 +112,7 @@ class LuzBelito inherits Enemigo(vida = 7, danio = 3, image = "luzbelito.png"){
   }
 }
 
-object bossFinal inherits Enemigo(vida=30, danio=20, image = "bossFinal.png", posicionActual = game.center()){
+object bossFinal inherits Enemigo(vida=100, danio=20, image = "bossFinal.png", posicionActual = game.center()){
    override method moverse(personaje) {
     const distanciaX = (self.position().x() - personaje.position().x()).abs()
     
