@@ -42,23 +42,6 @@ describe "tests de los personajes" {
         indio.agarrarPower(new Lentes())
         assert.equals(vidaInicial + 21, indio.vida() )
     }
-
-/*
-    test "el personaje agarra un powerup y su vida aumenta según el multiplicador del personaje" {
-        const personaje = skay
-        const powerUp = new Lentes()
-        
-        const vidaInicial = personaje.vida()
-        personaje.agarrarPower(powerUp)
-        const lista = personaje.getPowerUpBoost()
-        if(lista.contains(powerUp)) {
-            // El multiplicador de vida para skay es 2, y la vida del powerup es 3
-            assert.equals(vidaInicial + (personaje.multiplicadorVidaBoost(powerUp.vida())), personaje.vida())
-        }else{
-            assert.equals(vidaInicial + powerUp.vida(), personaje.vida())
-        }
-    }
-*/
 }
 
 describe "tests de los enemigos" {

@@ -19,7 +19,7 @@ object juego{
   var property nivelActual = new Nivel(cantidadEnemigosRonda=3, tickAparicionEnemigos= 5000, image = "fondoNivel1.png") 
 
   method iniciarNivel(){
-    //game.addVisual(nivelActual) ver como agregar bien el fondo
+    administracionEntidades.reiniciar()
     textoNivelActual.cambiarNivel(nivel)
     game.addVisual(nivelActual)
     game.addVisual(vidaJugador)
@@ -69,12 +69,7 @@ object juego{
   method iniciar() {
 
     fueIniciado = true
-    vidaJugador.actualizarVida(personaje.vida())
-    
-    nivelActual = new Nivel(cantidadEnemigosRonda=3, tickAparicionEnemigos= 5000, image = "fondoNivel1.png") 
-    administracionEntidades.settearTicks()
-    self.iniciarNivel()
-    //administracionEntidades.iniciarTicks()
+    self.reiniciarDesdeNivel1()
   }								
 
 
@@ -83,10 +78,10 @@ object juego{
     nivelActual = new Nivel(cantidadEnemigosRonda=3, tickAparicionEnemigos= 5000, image = "fondoNivel1.png")    
 
     // 1. Limpiamos las entidades y contadores
-    administracionEntidades.reiniciar()
     administracionEntidades.settearTicks()
     // 2. Reseteamos la vida y posición del personaje
     personaje.reiniciar() 
+    vidaJugador.actualizarVida(personaje.vida())
     
     // 3. Iniciamos el nivel y los ticks de nuevo
     self.iniciarNivel()
@@ -97,12 +92,10 @@ object juego{
 
   method ganaste() {
     administracionEntidades.frenarTicks()
-    administracionEntidades.reiniciarContador()
     self.removerTicks()
     game.clear()
     game.addVisual(pantallaWin)
     self.settearTeclas()
-    nivel = 1
     pantalla = pantallaWin
   }
 
@@ -113,7 +106,6 @@ object juego{
 
   method perder() {
     administracionEntidades.frenarTicks()
-    administracionEntidades.reiniciarContador()
     self.removerTicks()
     game.clear()
     game.addVisual(gameOver)

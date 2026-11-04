@@ -22,10 +22,6 @@ object administracionEntidades {
   method cantidadEnemigosAñadidos() = cantidadEnemigosAñadidos
   method getCantidadEnemigos() = enemigos.size()
   method enemigos() = enemigos
-  
-  method reiniciarContador() {
-    cantidadEnemigosAñadidos = 0
-  }
 
   method settearTicks() {
     tickMovimientoEnemigos = game.tick(1000, {self.moverEnemigos()}, false)
@@ -118,6 +114,7 @@ object administracionEntidades {
     enemigos.clear()
     cantidadEnemigosDerrotados = 0
     cantidadEnemigosAñadidos = 0
+    cantidadPowerUpsAñadidos = 0
   }
 
 }
