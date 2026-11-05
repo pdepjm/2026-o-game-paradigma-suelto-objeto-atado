@@ -64,7 +64,7 @@ class Enemigo {
 
 }
 
-class LoboSuelto inherits Enemigo(vida = 10, danio = 2,image = "loboSuelto.png"){
+class LoboSuelto inherits Enemigo(vida = 20, danio = 2,image = "loboSuelto.png"){
 
   override method moverse(personaje) {
       if(self.position().x() > personaje.position().x()){
@@ -81,7 +81,7 @@ class LoboSuelto inherits Enemigo(vida = 10, danio = 2,image = "loboSuelto.png")
    }
 }
 //ver de buscar forma más óptima de hacer las listas de ancho y largo
-class BarbaAzul inherits Enemigo(vida = 7, danio = 3,image = "barbaAzul.png"){
+class BarbaAzul inherits Enemigo(vida = 17, danio = 3,image = "barbaAzul.png"){
   
   override method moverse(personaje) {
       if(self.position().x() > personaje.position().x()){
@@ -94,7 +94,7 @@ class BarbaAzul inherits Enemigo(vida = 7, danio = 3,image = "barbaAzul.png"){
   }
 }
 
-class CorderoAtado inherits Enemigo(vida = 12, danio = 10,image = "corderoAtado.png"){
+class CorderoAtado inherits Enemigo(vida = 30, danio = 10,image = "corderoAtado.png"){
   //en caso de que lleguemos a hacer enemigos que disparen, este dispararia. Por ahora es un cactus
   override method moverse(personaje) {}//Queda asi porque no se mueve este enemigo
   override method chocarConElEnemigo(enemigo) {
@@ -102,7 +102,7 @@ class CorderoAtado inherits Enemigo(vida = 12, danio = 10,image = "corderoAtado.
   }
 }
 
-class LuzBelito inherits Enemigo(vida = 7, danio = 3, image = "luzbelito.png"){
+class LuzBelito inherits Enemigo(vida = 15, danio = 3, image = "luzbelito.png"){
     override method moverse(personaje) {
       if(self.position().y() > personaje.position().y()){
         self.sumarAPosicionActual(0,-1)
@@ -112,7 +112,7 @@ class LuzBelito inherits Enemigo(vida = 7, danio = 3, image = "luzbelito.png"){
   }
 }
 
-object bossFinal inherits Enemigo(vida=100, danio=20, image = "bossFinal.png", posicionActual = game.center()){
+object bossFinal inherits Enemigo(vida=150, danio=20, image = "bossFinal.png", posicionActual = game.center()){
    override method moverse(personaje) {
     const distanciaX = (self.position().x() - personaje.position().x()).abs()
     

@@ -34,6 +34,7 @@ class Personaje {
             self.aplicarBeneficio(modificacionVida,modificacionDaño)
         }
         game.say(self,"powerUp agarrado")
+        game.sound("PowerUp.mp3").play()
         game.removeVisual(powerUp)
     }
 
@@ -55,7 +56,7 @@ class Personaje {
 
     method chocarConElEnemigo(enemigo) {
         self.modificarVida(-(enemigo.danio()))
-        game.say(self, ("Dolor."))
+        game.sound("Danio.mp3").play()
     }
 
     method balas() = balas
@@ -70,6 +71,9 @@ class Personaje {
 	}
 
 	game.addVisual(bala)
+    const disparo = game.sound("Disparo.mp3")
+    disparo.volume(0.1)
+    disparo.play()
 	balas.add(bala)
   }
     method reiniciar() {
@@ -110,13 +114,15 @@ object walter inherits Personaje(vidaInicial = 6, nombrePersonaje="walter",armaE
     }
 }
 
-object sergio inherits Personaje(vidaInicial = 7, nombrePersonaje="sergio",armaEnMano = new ArmaDeFuego(danio = 2, cantidadCasillasMovimiento = 1), boostPowerUp = 5, powerUpsConvenientes = ["lentes","whisky","saxo"]) {
+object sergio inherits Personaje(vidaInicial = 10, nombrePersonaje="sergio",armaEnMano = new ArmaDeFuego(danio = 2, cantidadCasillasMovimiento = 1), boostPowerUp = 5, powerUpsConvenientes = ["lentes","whisky","saxo"]) {
     override method boostearPowerUp(modificacionVida, modificacionDaño) {
         const bonusRitmico = [4,2,6,8].anyOne()
         self.aplicarBeneficio(modificacionVida + bonusRitmico, modificacionDaño + bonusRitmico)
     }
 }
 object personajeNulo {
+    const balas = []
+    method balas() = balas
     method cambiarDireccion(nuevadireccion){}
     method dispararBala(imagen,esHorizontal,movimiento) {}
 }

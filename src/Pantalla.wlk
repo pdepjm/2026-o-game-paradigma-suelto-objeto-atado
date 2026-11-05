@@ -6,6 +6,7 @@ class Pantalla{
     var property position = game.origin()
 
     method image()
+    method musica()
 
     method apretarEnter(){}
     method apretarR(){}
@@ -18,14 +19,18 @@ class Pantalla{
 
 object pantallaInicial inherits Pantalla{
     var property spriteMenu = "pantallaInicial0.png"
+    const musica = "psico.mp3"
     override method image() = spriteMenu
     const personajes = [indio, skay, semilla, sergio, walter]
     var property personajeSeleccionado = 0
+
+    override method musica() = musica
 
     override method apretarEnter (){
         game.removeVisual(self)
         game.addVisual(pantallaControles)
         juego.pantalla(pantallaControles)
+        juego.pantalla.musica()
     }
 
     method avanzarPersonaje() {
@@ -38,7 +43,7 @@ object pantallaInicial inherits Pantalla{
 
     }
     override method apretarDerecha(){
-        self.avanzarPersonaje()    
+        self.avanzarPersonaje() 
     }
 
     method retrocederPersonaje() {
@@ -59,18 +64,27 @@ object pantallaInicial inherits Pantalla{
 
 object pantallaControles inherits Pantalla {
     override method image() = "pantallaControles.png"
+   
 
     override method apretarEnter() {
         game.removeVisual(self)
         juego.cambiarPersonaje(pantallaInicial.obtenerPersonajeActual())
         juego.iniciar()
         }
+
+    const musica = "menuInicial.mp3"
+    override method musica() = musica
 }
 
 object gameOver inherits Pantalla{
+    var cancionPosible = ["perdido1.mp3", "perdido2.mp3"];
+    const musica = cancionPosible.anyOne()
+
     override method image() = "pantallaPerdido.png"
+
     override method apretarR() {
         game.removeVisual(self)
+        juego.cambiarPersonaje(pantallaInicial.obtenerPersonajeActual())
         juego.reiniciarDesdeNivel1()
         }
 
@@ -78,25 +92,37 @@ object gameOver inherits Pantalla{
         game.removeVisual(self)
         game.addVisual(pantallaInicial)
         juego.pantalla(pantallaInicial)
+        juego.pantalla.musica()
         }
+
+    override method musica() = musica
 
 
 }
 
 object pantallaWin inherits Pantalla{
+    const musica = "ganado1.mp3"
     override method image() = "pantallaVictoria.png"
+    
     override method apretarEnter() {
         game.removeVisual(self)
         game.addVisual(pantallaInicial)
         juego.pantalla(pantallaInicial)
     }
+
+    override method musica() = musica
 }
 
 object pantallaFinRonda inherits Pantalla{
     override method image() = "pantallaFinRonda.png"
+    const musica = "salando.mp3"
+
    
     override method apretarEnter() {
     game.removeVisual(self)
+    juego.cambiarPersonaje(pantallaInicial.obtenerPersonajeActual())
     juego.arrancarNuevoNivel()
     }
+
+    override method musica() = musica
 }

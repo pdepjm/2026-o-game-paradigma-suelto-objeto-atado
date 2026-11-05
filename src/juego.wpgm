@@ -11,10 +11,28 @@ object juego{
   const cantidadNiveles = 3
   
   var property personaje = personajeNulo
+  var property personajeOriginal = personajeNulo
   var property pantalla = pantallaInicial
   var fueIniciado = false
   
   var nivel = 1
+
+  var musicaActual = null
+
+  method cambiarMusica(archivo) {
+  if (musicaActual != null) {
+    musicaActual.stop()
+  }
+    musicaActual = game.sound(archivo)   // sonido nuevo cada vez
+    musicaActual.shouldLoop(true)        // antes del play
+    musicaActual.volume(0.1)
+    musicaActual.play()
+  }
+
+  method cambiarPantalla(nuevaPantalla) {
+    pantalla = nuevaPantalla
+    self.cambiarMusica(nuevaPantalla.musica())
+  }
 
   var property nivelActual = new Nivel(cantidadEnemigosRonda=3, tickAparicionEnemigos= 5000, image = "fondoNivel1.png") 
 
@@ -25,7 +43,7 @@ object juego{
     game.addVisual(vidaJugador)
     game.addVisual(textoNivelActual)
     game.onTick(nivelActual.tickAparicionEnemigos(), "crearEnemigos", {administracionEntidades.añadirEnemigo(personaje)})
-    game.onTick(7500, "crearPowerUps", { administracionEntidades.añadirPowerUp() })
+    game.onTick(9500, "crearPowerUps", { administracionEntidades.añadirPowerUp() })
     game.addVisualCharacter(personaje)
 
     administracionEntidades.iniciarTicks()
@@ -41,7 +59,9 @@ object juego{
       nivel += 1
       game.removeVisual(personaje)
       game.addVisual(pantallaFinRonda)
-      pantalla = pantallaFinRonda
+      personaje = personajeNulo
+      self.cambiarPantalla(pantallaFinRonda)
+
     }
     
     
@@ -76,7 +96,9 @@ object juego{
   method reiniciarDesdeNivel1() {
     nivel = 1
     nivelActual = new Nivel(cantidadEnemigosRonda=3, tickAparicionEnemigos= 5000, image = "fondoNivel1.png")    
-
+    if(musicaActual != null) {
+      musicaActual.stop()
+    }
     // 1. Limpiamos las entidades y contadores
     administracionEntidades.settearTicks()
     // 2. Reseteamos la vida y posición del personaje
@@ -93,10 +115,12 @@ object juego{
   method ganaste() {
     administracionEntidades.frenarTicks()
     self.removerTicks()
+    personaje = personajeNulo
     game.clear()
     game.addVisual(pantallaWin)
     self.settearTeclas()
-    pantalla = pantallaWin
+    self.cambiarPantalla(pantallaWin)
+
   }
 
   method removerTicks() {
@@ -107,10 +131,12 @@ object juego{
   method perder() {
     administracionEntidades.frenarTicks()
     self.removerTicks()
+    personaje = personajeNulo
     game.clear()
     game.addVisual(gameOver)
     self.settearTeclas()
-    pantalla = gameOver
+    self.cambiarPantalla(gameOver)
+
   }
 
   method settearTeclas() {
@@ -120,6 +146,8 @@ object juego{
     keyboard.left().onPressDo({self.pantalla().apretarIzquierda() personaje.cambiarDireccion("Izquierda")})
     keyboard.up().onPressDo({personaje.cambiarDireccion("Arriba")})
     keyboard.down().onPressDo({personaje.cambiarDireccion("Derecha")})
+
+    
   
   // Controles de disparo protegidos
     keyboard.w().onPressDo({ personaje.dispararBala("balaArriba.png", false, 1) })
@@ -138,8 +166,9 @@ program misaRicotera {
   
   var personaje = personajeNulo
   game.addVisual(pantallaInicial)
-
+  juego.cambiarPantalla(pantallaInicial)
   juego.settearTeclas()
 
   game.start()
+  
 }
