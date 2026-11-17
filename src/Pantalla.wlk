@@ -19,7 +19,7 @@ class Pantalla{
 
 object pantallaInicial inherits Pantalla{
     var property spriteMenu = "pantallaInicial0.png"
-    const musica = "psico.mp3"
+    const musica = "menuInicial.mp3"
     override method image() = spriteMenu
     const personajes = [indio, skay, semilla, sergio, walter]
     var property personajeSeleccionado = 0
@@ -30,7 +30,6 @@ object pantallaInicial inherits Pantalla{
         game.removeVisual(self)
         game.addVisual(pantallaControles)
         juego.pantalla(pantallaControles)
-        juego.pantalla.musica()
     }
 
     method avanzarPersonaje() {
@@ -91,8 +90,7 @@ object gameOver inherits Pantalla{
     override method apretarEnter() {
         game.removeVisual(self)
         game.addVisual(pantallaInicial)
-        juego.pantalla(pantallaInicial)
-        juego.pantalla.musica()
+        juego.cambiarPantalla(pantallaInicial)
         }
 
     override method musica() = musica
@@ -107,7 +105,7 @@ object pantallaWin inherits Pantalla{
     override method apretarEnter() {
         game.removeVisual(self)
         game.addVisual(pantallaInicial)
-        juego.pantalla(pantallaInicial)
+        juego.cambiarPantalla(pantallaInicial)
     }
 
     override method musica() = musica

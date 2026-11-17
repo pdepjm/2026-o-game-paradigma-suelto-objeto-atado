@@ -20,13 +20,18 @@ object juego{
   var musicaActual = null
 
   method cambiarMusica(archivo) {
-  if (musicaActual != null) {
-    musicaActual.stop()
-  }
+    self.detenerMusica()
     musicaActual = game.sound(archivo)   // sonido nuevo cada vez
     musicaActual.shouldLoop(true)        // antes del play
     musicaActual.volume(0.1)
     musicaActual.play()
+  }
+
+  method detenerMusica() {
+    if (musicaActual != null) {
+      musicaActual.stop()
+      musicaActual = null
+    }
   }
 
   method cambiarPantalla(nuevaPantalla) {
@@ -68,13 +73,13 @@ object juego{
   }
 
   method arrancarNuevoNivel() {
-    // const nivelAnterior = nivelActual
     const cantidadEnemigosRonda = 3 + (nivel * 4)
     const tickAparicionEnemigos = 3000 - (nivel * 500)
     const fondo = "fondoNivel" + nivel + ".png"
     
     nivelActual = new Nivel(cantidadEnemigosRonda = cantidadEnemigosRonda, tickAparicionEnemigos = tickAparicionEnemigos, image = fondo)
 
+    self.detenerMusica()
     game.clear()
 
     self.settearTeclas()
@@ -92,13 +97,15 @@ object juego{
     self.reiniciarDesdeNivel1()
   }								
 
-
+// cambio 2
   method reiniciarDesdeNivel1() {
+    self.detenerMusica()
+    game.clear()
+    self.settearTeclas()
+    
     nivel = 1
     nivelActual = new Nivel(cantidadEnemigosRonda=3, tickAparicionEnemigos= 5000, image = "fondoNivel1.png")    
-    if(musicaActual != null) {
-      musicaActual.stop()
-    }
+    
     // 1. Limpiamos las entidades y contadores
     administracionEntidades.settearTicks()
     // 2. Reseteamos la vida y posición del personaje
@@ -107,7 +114,6 @@ object juego{
     
     // 3. Iniciamos el nivel y los ticks de nuevo
     self.iniciarNivel()
-    //administracionEntidades.iniciarTicks()
   }
 
   method fueIniciado() = fueIniciado
@@ -140,7 +146,7 @@ object juego{
   }
 
   method settearTeclas() {
-    keyboard.enter().onPressDo({self.pantalla().apretarEnter() personaje = self.pantalla().obtenerPersonajeActual()})
+    keyboard.enter().onPressDo({self.pantalla().apretarEnter()})
     keyboard.r().onPressDo({self.pantalla().apretarR()})
     keyboard.right().onPressDo({self.pantalla().apretarDerecha() personaje.cambiarDireccion("Derecha")})
     keyboard.left().onPressDo({self.pantalla().apretarIzquierda() personaje.cambiarDireccion("Izquierda")})
@@ -166,8 +172,9 @@ program misaRicotera {
   
   var personaje = personajeNulo
   game.addVisual(pantallaInicial)
-  juego.cambiarPantalla(pantallaInicial)
   juego.settearTeclas()
+
+  game.schedule(500, {juego.cambiarPantalla(pantallaInicial)})
 
   game.start()
   

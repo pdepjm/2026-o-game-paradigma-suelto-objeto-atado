@@ -2,6 +2,7 @@ import Nivel.*
 import juego.*
 import Administracion.administracionEntidades
 class ArmaDeFuego {
+    const danioInicial = danio
     var danio
     var image = ""
 	var position = game.origin()
@@ -12,6 +13,10 @@ class ArmaDeFuego {
 
     method modificarDanio(danioSumado) {
         danio += danioSumado
+    }
+
+    method reiniciarDanio(){
+        danio = danioInicial
     }
 	method danio() = danio
 	method position() = position

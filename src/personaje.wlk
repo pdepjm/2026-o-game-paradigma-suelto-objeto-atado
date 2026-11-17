@@ -79,6 +79,9 @@ class Personaje {
     method reiniciar() {
     vida = vidaInicial // o el valor de vida inicial que uses
     position = posicionInicial // la posición inicial donde arranca en el tablero
+    direccion = "Derecha"
+    balas.clear()
+    armaEnMano.reiniciarDanio()
   }
 }
 

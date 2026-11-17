@@ -5,6 +5,7 @@ import personaje.*
 import juego.juego
 import Administracion.administracionEntidades
 import Nivel.*
+import Pantalla.*
 
 class EnemigoTest {
     var movimientos = 0
@@ -38,9 +39,25 @@ describe "tests de los personajes" {
     }
 
     test "el personaje agarra un powerUp benefisioso" {
-        const vidaInicial = indio.vida()
-        indio.agarrarPower(new Lentes())
-        assert.equals(vidaInicial + 21, indio.vida() )
+        const vidaInicial = semilla.vida()
+        semilla.agarrarPower(new Whisky())
+        // (-2) del whisky + cantidadEnemigosRonda(esta seteado el nivel 1 => valor = 3) * 0,5
+        assert.equals(vidaInicial - 2 + 3 * 0.5, semilla.vida() )
+    }
+
+    test "reiniciar restaura la vida, posicion, direccion y balas" {
+        indio.reiniciar()
+        indio.modificarVida(-3)
+        indio.position(game.at(2, 3))
+        indio.cambiarDireccion("Izquierda")
+        indio.balas().add("balaDePrueba")
+
+        indio.reiniciar()
+
+        assert.equals(10, indio.vida())
+        assert.equals(game.center(), indio.position())
+        assert.equals("indioDerecha.png", indio.image())
+        assert.equals(0, indio.balas().size())
     }
 }
 
@@ -186,4 +203,63 @@ describe "tests para la administracion de entidades" {
     }
 
 
+}
+
+describe "tests de armas" {
+
+    test "modificarDanio aumenta el danio del arma" {
+        const arma = new ArmaDeFuego(danio = 2)
+
+        arma.modificarDanio(3)
+
+        assert.equals(5, arma.danio())
+    }
+
+    test "una bala horizontal se mueve dos casillas en x" {
+        const bala = new ArmaDeFuego(
+            danio = 2,
+            seMueveHorizontal = true,
+            cantidadCasillasMovimiento = 2
+        )
+        bala.cambiarPosicion(5, 5)
+
+        bala.mover()
+
+        assert.equals(game.at(7, 5), bala.position())
+    }
+
+    test "una bala vertical se mueve una casilla en y" {
+        const bala = new ArmaDeFuego(
+            danio = 2,
+            seMueveHorizontal = false,
+            cantidadCasillasMovimiento = 1
+        )
+        bala.cambiarPosicion(5, 5)
+
+        bala.mover()
+
+        assert.equals(game.at(5, 6), bala.position())
+    }
+}
+
+
+describe "tests de seleccion de personaje" {
+
+    test "avanzar desde el ultimo personaje vuelve al primero" {
+        pantallaInicial.personajeSeleccionado(4)
+
+        pantallaInicial.avanzarPersonaje()
+
+        assert.equals(0, pantallaInicial.personajeSeleccionado())
+        assert.equals("pantallaInicial0.png", pantallaInicial.image())
+    }
+
+    test "retroceder desde el primero selecciona el ultimo" {
+        pantallaInicial.personajeSeleccionado(0)
+
+        pantallaInicial.retrocederPersonaje()
+
+        assert.equals(4, pantallaInicial.personajeSeleccionado())
+        assert.equals("pantallaInicial4.png", pantallaInicial.image())
+    }
 }
