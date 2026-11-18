@@ -1,0 +1,181 @@
+import Arma.*
+import wollok.game.*
+import personaje.*
+import Enemigo.*
+import Nivel.*
+import Pantalla.*
+import Powerup.*
+import Administracion.*
+
+object juego{
+  const cantidadNiveles = 3
+  
+  var property personaje = personajeNulo
+  var property personajeOriginal = personajeNulo
+  var property pantalla = pantallaInicial
+  var fueIniciado = false
+  
+  var nivel = 1
+
+  var musicaActual = null
+
+  method cambiarMusica(archivo) {
+    self.detenerMusica()
+    musicaActual = game.sound(archivo)   // sonido nuevo cada vez
+    musicaActual.shouldLoop(true)        // antes del play
+    musicaActual.volume(0.1)
+    musicaActual.play()
+  }
+
+  method detenerMusica() {
+    if (musicaActual != null) {
+      musicaActual.stop()
+      musicaActual = null
+    }
+  }
+
+  method cambiarPantalla(nuevaPantalla) {
+    pantalla = nuevaPantalla
+    self.cambiarMusica(nuevaPantalla.musica())
+  }
+
+  var property nivelActual = new Nivel(cantidadEnemigosRonda=3, tickAparicionEnemigos= 5000, image = "fondoNivel1.png") 
+
+  method iniciarNivel(){
+    administracionEntidades.reiniciar()
+    textoNivelActual.cambiarNivel(nivel)
+    game.addVisual(nivelActual)
+    game.addVisual(vidaJugador)
+    game.addVisual(textoNivelActual)
+    game.onTick(nivelActual.tickAparicionEnemigos(), "crearEnemigos", {administracionEntidades.añadirEnemigo(personaje)})
+    game.onTick(9500, "crearPowerUps", { administracionEntidades.añadirPowerUp() })
+    game.addVisualCharacter(personaje)
+
+    administracionEntidades.iniciarTicks()
+  }
+
+  method terminarNivel(){
+    if(nivel == cantidadNiveles){
+      game.removeTickEvent("crearEnemigos")
+      administracionEntidades.generarJefe()
+    }else{
+      administracionEntidades.eliminarTicks()
+      game.removeVisual(nivelActual)
+      nivel += 1
+      game.removeVisual(personaje)
+      game.addVisual(pantallaFinRonda)
+      personaje = personajeNulo
+      self.cambiarPantalla(pantallaFinRonda)
+
+    }
+    
+    
+  }
+
+  method arrancarNuevoNivel() {
+    const cantidadEnemigosRonda = 3 + (nivel * 4)
+    const tickAparicionEnemigos = 3000 - (nivel * 500)
+    const fondo = "fondoNivel" + nivel + ".png"
+    
+    nivelActual = new Nivel(cantidadEnemigosRonda = cantidadEnemigosRonda, tickAparicionEnemigos = tickAparicionEnemigos, image = fondo)
+
+    self.detenerMusica()
+    game.clear()
+
+    self.settearTeclas()
+    self.iniciarNivel()
+  }
+
+  method cambiarPersonaje(nuevoPersonaje) {
+    personaje = nuevoPersonaje
+  }
+
+
+  method iniciar() {
+
+    fueIniciado = true
+    self.reiniciarDesdeNivel1()
+  }								
+
+// cambio 2
+  method reiniciarDesdeNivel1() {
+    self.detenerMusica()
+    game.clear()
+    self.settearTeclas()
+    
+    nivel = 1
+    nivelActual = new Nivel(cantidadEnemigosRonda=3, tickAparicionEnemigos= 5000, image = "fondoNivel1.png")    
+    
+    // 1. Limpiamos las entidades y contadores
+    administracionEntidades.settearTicks()
+    // 2. Reseteamos la vida y posición del personaje
+    personaje.reiniciar() 
+    vidaJugador.actualizarVida(personaje.vida())
+    
+    // 3. Iniciamos el nivel y los ticks de nuevo
+    self.iniciarNivel()
+  }
+
+  method fueIniciado() = fueIniciado
+
+  method ganaste() {
+    administracionEntidades.frenarTicks()
+    self.removerTicks()
+    personaje = personajeNulo
+    game.clear()
+    game.addVisual(pantallaWin)
+    self.settearTeclas()
+    self.cambiarPantalla(pantallaWin)
+
+  }
+
+  method removerTicks() {
+    game.removeTickEvent("crearEnemigos")
+    game.removeTickEvent("crearPowerUps")
+  }
+
+  method perder() {
+    administracionEntidades.frenarTicks()
+    self.removerTicks()
+    personaje = personajeNulo
+    game.clear()
+    game.addVisual(gameOver)
+    self.settearTeclas()
+    self.cambiarPantalla(gameOver)
+
+  }
+
+  method settearTeclas() {
+    keyboard.enter().onPressDo({self.pantalla().apretarEnter()})
+    keyboard.r().onPressDo({self.pantalla().apretarR()})
+    keyboard.right().onPressDo({self.pantalla().apretarDerecha() personaje.cambiarDireccion("Derecha")})
+    keyboard.left().onPressDo({self.pantalla().apretarIzquierda() personaje.cambiarDireccion("Izquierda")})
+    keyboard.up().onPressDo({personaje.cambiarDireccion("Arriba")})
+    keyboard.down().onPressDo({personaje.cambiarDireccion("Derecha")})
+
+    
+  
+  // Controles de disparo protegidos
+    keyboard.w().onPressDo({ personaje.dispararBala("balaArriba.png", false, 1) })
+    keyboard.a().onPressDo({ personaje.dispararBala("balaIzquierda.png", true, -1) })
+    keyboard.s().onPressDo({ personaje.dispararBala("balaAbajo.png", false, -1) })
+    keyboard.d().onPressDo({ personaje.dispararBala("balaDerecha.png", true, 1) })
+  }
+
+}
+
+program misaRicotera {
+  game.title("La Misa Ricotera")
+  game.height(15)
+  game.width(20)
+  game.cellSize(50)
+  
+  var personaje = personajeNulo
+  game.addVisual(pantallaInicial)
+  juego.settearTeclas()
+
+  game.schedule(500, {juego.cambiarPantalla(pantallaInicial)})
+
+  game.start()
+  
+}

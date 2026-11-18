@@ -1,0 +1,142 @@
+import juego.juego
+import personaje.Personaje
+import Enemigo.*
+import Powerup.*
+
+object administracionEntidades {
+  const enemigos = []
+  var cantidadEnemigosDerrotados = 0
+  var cantidadEnemigosAñadidos = 0
+  var cantidadPowerUpsAñadidos = 0
+  const cantidadPowerUpsRonda = 5
+  
+  //los enemigos se mueven cada 1 segundo
+  var tickMovimientoEnemigos = game.tick(1000, {self.moverEnemigos()}, false)
+  //cada 100 milisegundos se mueven las balas disparadas por el personaje
+  var tickMovimientoBalas= game.tick(100, {self.moverBalas()}, false)
+
+  method personaje() = juego.personaje()
+  method nivelActual() = juego.nivelActual()
+
+  //Metodos para los tests
+  method cantidadEnemigosAñadidos() = cantidadEnemigosAñadidos
+  method getCantidadEnemigos() = enemigos.size()
+  method enemigos() = enemigos
+
+  method settearTicks() {
+    tickMovimientoEnemigos = game.tick(1000, {self.moverEnemigos()}, false)
+    tickMovimientoBalas= game.tick(100, {self.moverBalas()}, false)
+  }
+
+  method moverEnemigos() {
+    enemigos.forEach({enemigo => enemigo.moverse(self.personaje())})
+  }
+
+  method añadirEnemigo(jugador) {
+	  if(cantidadEnemigosAñadidos < self.nivelActual().cantidadEnemigosRonda()) { 
+		
+      // se crea una instancia del enemigo aleatorio de la lista de posibles enemigos
+      const nuevoEnemigo = self.nivelActual().enemigosPosibles().anyOne().apply()
+      nuevoEnemigo.cambiarPersonaje(jugador)
+      nuevoEnemigo.generarPosInicial()
+      enemigos.add(nuevoEnemigo)
+      game.addVisual(nuevoEnemigo)
+
+      game.onCollideDo(nuevoEnemigo, {objeto => objeto.chocarConElEnemigo(nuevoEnemigo)})
+      cantidadEnemigosAñadidos+=1
+
+	  }else {
+		  game.removeTickEvent("crearEnemigos")
+	  }
+  }
+
+  method generarJefe() {
+    const jefe = bossFinal
+
+    enemigos.add(jefe)
+    game.addVisual(jefe)
+    game.onCollideDo(jefe, {objeto => objeto.chocarConElEnemigo(jefe)})
+    
+  }
+
+  method eliminarEnemigo(enemigo) {
+    enemigos.remove(enemigo)
+    cantidadEnemigosDerrotados += 1
+    if(cantidadEnemigosDerrotados == self.nivelActual().cantidadEnemigosRonda()) {
+      cantidadEnemigosDerrotados = 0
+      cantidadEnemigosAñadidos = 0
+      juego.terminarNivel()
+    }
+  }
+
+  method moverBalas() {
+	self.personaje().balas().forEach({bala => bala.mover()})
+  }
+
+  method eliminarBala(bala) {
+	self.personaje().balas().remove(bala)
+  }
+
+  method iniciarTicks() {
+    tickMovimientoBalas.start()
+    tickMovimientoEnemigos.start()		
+  }
+
+  method frenarTicks() {
+    tickMovimientoBalas.stop()
+    tickMovimientoEnemigos.stop()
+  }
+
+  method eliminarTicks() {
+    game.removeTickEvent("crearEnemigos")
+    game.removeTickEvent("crearPowerUps")
+  }
+
+  //const powerUpsPosibles = ["pua","lentes"]
+  const instanciasPowerUpsPosibles = [{=> new PuaDeGuitarra()},{=> new Lentes()},{=> new Saxo()},{=> new Palillos()},{=> new Whisky()}]
+
+  method añadirPowerUp() {
+    if(cantidadPowerUpsAñadidos < cantidadPowerUpsRonda) {
+      const nuevoPowerUp = instanciasPowerUpsPosibles.anyOne().apply()
+        
+      nuevoPowerUp.generarPosInicial()
+      game.addVisual(nuevoPowerUp)
+        
+      game.onCollideDo(nuevoPowerUp, { objeto => nuevoPowerUp.serAgarradoPor(objeto) })
+      cantidadPowerUpsAñadidos+=1
+    }else{
+      game.removeTickEvent("crearPowerUps")
+    }
+    
+  }
+
+  method reiniciar() {
+    enemigos.clear()
+    cantidadEnemigosDerrotados = 0
+    cantidadEnemigosAñadidos = 0
+    cantidadPowerUpsAñadidos = 0
+  }
+
+}
+
+object vidaJugador {
+  var vidaJugador = 0
+  method position() = game.origin()
+  method text() = "Vida: " + vidaJugador
+
+  method actualizarVida(nuevaVida) {
+    vidaJugador = nuevaVida
+  }
+}
+
+object textoNivelActual {
+  var nivel = 1
+
+  method position() = game.at(0,14)
+
+  method text() = "Nivel " + nivel + "/3"
+
+  method cambiarNivel(nuevoNivel) {
+    nivel = nuevoNivel
+  }
+}
